@@ -1,12 +1,13 @@
 SHELL := /bin/sh
 CXX := g++
+WXCONFIG := wx-config-2.9
 IDIRS := /c/boost/boost_1_49_0
-CXXFLAGS := -std=gnu++0x -Wall -Wextra -Wno-old-style-cast -pedantic -g -c $(addprefix -I, $(IDIRS)) \
-	$$(wx-config --cxxflags)
-CPPFLAGS := -std=gnu++0x $$(wx-config --cppflags)
+CXXFLAGS := -std=gnu++11 -Wall -Wextra -Wno-old-style-cast -pedantic -g -c \
+	$$($(WXCONFIG) --cxxflags) $(addprefix -I, $(IDIRS))
+CPPFLAGS := -std=gnu++0x $$($(WXCONFIG) --cppflags)
 LDIRS := /c/boost/boost_1_49_0/stage/lib/
-LDLIBS := -lboost_thread-mgw46-mt-1_49 -lboost_regex-mgw46-mt-1_49 -lboost_filesystem-mgw46-mt-1_49 \
-	-lboost_system-mgw46-mt-1_49 $$(wx-config --libs)
+LDLIBS := -lboost_thread -lboost_regex -lboost_filesystem \
+	-lboost_system $$($(WXCONFIG) --libs)
 LDFLAGS := -std=c++11 -Wall -Wextra -Wno-old-style-cast -pedantic $(addprefix -L, $(LDIRS))
 PROG := track_hack.exe
 SRCS := app.cpp bitmap.cpp frame.cpp main_frame.cpp movie.cpp open_movie_wizard.cpp track_panel.cpp trackee.cpp tracker.cpp trackee_box.cpp one_through_three.cpp
@@ -23,8 +24,11 @@ ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # any real goals?
 endif
 
 $(PROG): $(OBJS)
-	windres -I/c/wx/include/ track_hack.rc -o track_hack_rc.o
-	$(CXX) $(LDFLAGS) $(OBJS) $(LDLIBS) track_hack_rc.o -o $(PROG)
+	$(CXX) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(PROG)
+
+#$(PROG): $(OBJS)
+	#windres -I/c/wx/include/ track_hack.rc -o track_hack_rc.o
+	#$(CXX) $(LDFLAGS) $(OBJS) $(LDLIBS) track_hack_rc.o -o $(PROG)
 
 clean:
 	$(RM) $(OBJS) $(PREREQS) $(PROG)
