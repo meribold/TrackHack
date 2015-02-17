@@ -9,8 +9,8 @@ Movie::Movie(const std::string& dir, const std::string& regExString) :
 {
 	using namespace boost::filesystem;
 
-	// append backslash to directory name if necessary so concatenation works as expected
-	if (*--this->dir->end() != '/') *this->dir += '/';
+	// Append a directory separator character if necessary, so concatenation works as expected.
+	if (*--this->dir->end() != path::preferred_separator) *this->dir += path::preferred_separator;
 
 	try
 	{

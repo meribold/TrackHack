@@ -1,6 +1,6 @@
 SHELL := /bin/sh
 CXX := g++
-WXCONFIG := wx-config-2.9
+WXCONFIG := wx-config
 IDIRS := /c/boost/boost_1_49_0
 CXXFLAGS := -std=gnu++11 -Wall -Wextra -Wno-old-style-cast -pedantic -g -c \
 	$$($(WXCONFIG) --cxxflags) $(addprefix -I, $(IDIRS))
