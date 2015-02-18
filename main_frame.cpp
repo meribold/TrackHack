@@ -60,8 +60,6 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
          "track_hack_splash_[0-9]{2}\\.bmp"}};
 
       if (!movie->getSize()) throw "CURSE IT!";
-
-      trackPanel->setBitmap(getBitmap(0));
    }
 
    //// <_..._> ////
@@ -122,6 +120,11 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    SetMenuBar(menuBar);
    ///
    //// </_menu_bar_construction_> ////
+   CreateStatusBar(1, wxSTB_SIZEGRIP | wxSTB_SHOW_TIPS | wxSTB_ELLIPSIZE_START |
+      wxFULL_REPAINT_ON_RESIZE);
+
+   trackPanel->setBitmap(getBitmap(0));
+   SetStatusText(movie->getFilename(0));
 
    //// <_event_handler_mappings_> ////
    ///
@@ -366,6 +369,8 @@ void MainFrame::onSlider(wxCommandEvent&)
       }
    }
 
+   SetStatusText(movie->getFilename(movieSlider->GetValue()));
+
    trackPanel->focusIndex(movieSlider->GetValue());
    trackPanel->Refresh(false);
 }
@@ -404,6 +409,7 @@ void MainFrame::onOpen(wxCommandEvent&)
          movieSlider->SetRange(0, movie->getSize() - 1);
          movieSlider->SetValue(0); // does not post or queue an event
          trackPanel->setBitmap(getBitmap(0));
+         SetStatusText(movie->getFilename(0));
 
          // First, invoke the sizer-based layout algorithm for topPanel, THEN cause
          // movieSlider to be repainted.
