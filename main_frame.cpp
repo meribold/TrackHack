@@ -25,8 +25,8 @@
 #include "one_through_three.h"
 
 // weakly typed enum because implicit conversion is convenient
-enum mainFrameId : unsigned { myID_TRACKEEBOX = wxID_HIGHEST, myID_LINKBOX, myID_TRACK, myID_DELETE_TRACKEE,
-                              myID_REMOVE_LINK};
+enum mainFrameId : unsigned { myID_TRACKEEBOX = wxID_HIGHEST, myID_LINKBOX, myID_TRACK,
+   myID_DELETE_TRACKEE, myID_REMOVE_LINK };
 
 template <std::size_t N>
 void createBitmaps(std::string name);
@@ -34,122 +34,127 @@ void createBitmaps(std::string name);
 //// <_constructors_> ////
 ///
 MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
-	wxFrame{nullptr, wxID_ANY, "TrackHack", pos, size},
-	menuBar{new wxMenuBar{}},
-	fileMenu{new wxMenu{}},
-	editMenu{new wxMenu{}},
-	viewMenu{new wxMenu{}},
-	toolsMenu{new wxMenu{}},
-	plugInMenu{new wxMenu{}},
-	helpMenu{new wxMenu{}},
-	topPanel{new wxPanel{this, wxID_ANY, wxDefaultPosition, wxDefaultSize}},
-	topSizer{new wxBoxSizer{wxVERTICAL}},
-	trackeeBox{new TrackeeBox{topPanel, myID_TRACKEEBOX}},
-	markBox{new wxListBox{topPanel, myID_LINKBOX}},
-	trackPanel{new TrackPanel{topPanel}},
-	movieSlider{new wxSlider{topPanel, wxID_ANY, 0, 0, 2, wxDefaultPosition, wxDefaultSize, wxSL_LABELS}},
-	marks{}, movie{}, tracker{}, trackees{}
+   wxFrame{nullptr, wxID_ANY, "TrackHack", pos, size},
+   menuBar{new wxMenuBar{}},
+   fileMenu{new wxMenu{}},
+   editMenu{new wxMenu{}},
+   viewMenu{new wxMenu{}},
+   toolsMenu{new wxMenu{}},
+   plugInMenu{new wxMenu{}},
+   helpMenu{new wxMenu{}},
+   topPanel{new wxPanel{this, wxID_ANY, wxDefaultPosition, wxDefaultSize}},
+   topSizer{new wxBoxSizer{wxVERTICAL}},
+   trackeeBox{new TrackeeBox{topPanel, myID_TRACKEEBOX}},
+   markBox{new wxListBox{topPanel, myID_LINKBOX}},
+   trackPanel{new TrackPanel{topPanel}},
+   movieSlider{new wxSlider{topPanel, wxID_ANY, 0, 0, 2, wxDefaultPosition, wxDefaultSize,
+      wxSL_LABELS}},
+   marks{}, movie{}, tracker{}, trackees{}
 {
-	{
-		wxFileName splashFileName{wxStandardPaths::Get().GetUserDataDir().ToStdString(), "track_hack_splash_", ""};
+   {
+      wxFileName splashFileName{wxStandardPaths::Get().GetUserDataDir().ToStdString(),
+         "track_hack_splash_", ""};
 
-		createBitmaps<3>(splashFileName.GetFullPath().ToStdString());
-		movie = std::unique_ptr<Movie>{
-			new Movie{splashFileName.GetPath().ToStdString(), "track_hack_splash_[0-9]{2}\\.bmp"}
-		};
+      createBitmaps<3>(splashFileName.GetFullPath().ToStdString());
+      movie = std::unique_ptr<Movie>{new Movie{splashFileName.GetPath().ToStdString(),
+         "track_hack_splash_[0-9]{2}\\.bmp"}};
 
-		if (!movie->getSize()) throw "CURSE IT!";
+      if (!movie->getSize()) throw "CURSE IT!";
 
-		trackPanel->setBitmap(getBitmap(0));
-	}
+      trackPanel->setBitmap(getBitmap(0));
+   }
 
-	//// <_..._> ////
-	///
-	wxBoxSizer* expandedHBox = new wxBoxSizer{wxHORIZONTAL};
-	expandedHBox->Add(trackeeBox, 1, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 1);
-	expandedHBox->Add(markBox, 0, wxEXPAND | wxTOP | wxRIGHT, 1);
+   //// <_..._> ////
+   ///
+   wxBoxSizer* expandedHBox = new wxBoxSizer{wxHORIZONTAL};
+   expandedHBox->Add(trackeeBox, 1, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 1);
+   expandedHBox->Add(markBox, 0, wxEXPAND | wxTOP | wxRIGHT, 1);
 
-	topSizer->Add(expandedHBox, 0, wxEXPAND);
-	topSizer->Add(trackPanel, 1, wxALIGN_CENTER | wxSHAPED | wxALL, 1);
-	topSizer->Add(movieSlider, 0, wxEXPAND | wxLEFT | wxRIGHT, 16);
+   topSizer->Add(expandedHBox, 0, wxEXPAND);
+   topSizer->Add(trackPanel, 1, wxALIGN_CENTER | wxSHAPED | wxALL, 1);
+   topSizer->Add(movieSlider, 0, wxEXPAND | wxLEFT | wxRIGHT, 16);
 
-	markBox->Hide();
+   markBox->Hide();
 
-	topPanel->SetSizer(topSizer);
-	SetMinSize(wxSize{384, 432});
-	///
-	//// </_..._> ////
+   topPanel->SetSizer(topSizer);
+   SetMinSize(wxSize{384, 432});
+   ///
+   //// </_..._> ////
 
-	//// <_menu_bar_contruction_> ////
-	///
-	// see the documentation of wxMenuItem::SetItemLabel() to find how the mnemonics and accelerator strings
-	// in the following menu items magically work all by themselves
-	fileMenu->Append(wxID_OPEN, "&Open\tCtrl+O");
-	fileMenu->Append(wxID_SAVE);
-	fileMenu->AppendSeparator();
-	fileMenu->Append(myID_TRACK, "&Track\tCtrl+T");
-	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_EXIT);
+   //// <_menu_bar_contruction_> ////
+   ///
+   // See the documentation of wxMenuItem::SetItemLabel() to find how the mnemonics and
+   // accelerator strings in the following menu items magically work all by themselves.
+   fileMenu->Append(wxID_OPEN, "&Open\tCtrl+O");
+   fileMenu->Append(wxID_SAVE);
+   fileMenu->AppendSeparator();
+   fileMenu->Append(myID_TRACK, "&Track\tCtrl+T");
+   fileMenu->AppendSeparator();
+   fileMenu->Append(wxID_EXIT);
 
-	editMenu->Append(wxID_PROPERTIES, "&Properties\tCtrl+P");
-	editMenu->Enable(wxID_PROPERTIES, false);
-	editMenu->AppendSeparator();
-	editMenu->Append(myID_DELETE_TRACKEE, "&Delete trackee\tCtrl+D");
-	editMenu->Enable(myID_DELETE_TRACKEE, false);
-	editMenu->Append(myID_REMOVE_LINK, "&Remove link\tCtrl+R");
-	editMenu->Enable(myID_REMOVE_LINK, false);
+   editMenu->Append(wxID_PROPERTIES, "&Properties\tCtrl+P");
+   editMenu->Enable(wxID_PROPERTIES, false);
+   editMenu->AppendSeparator();
+   editMenu->Append(myID_DELETE_TRACKEE, "&Delete trackee\tCtrl+D");
+   editMenu->Enable(myID_DELETE_TRACKEE, false);
+   editMenu->Append(myID_REMOVE_LINK, "&Remove link\tCtrl+R");
+   editMenu->Enable(myID_REMOVE_LINK, false);
 
-	viewMenu->AppendCheckItem(wxID_ANY, "&Status bar");
+   viewMenu->AppendCheckItem(wxID_ANY, "&Status bar");
 
-	toolsMenu->Append(wxID_ANY, "View s&ystem-wide configuration file");
-	toolsMenu->Append(wxID_ANY, "View &user-specific configuration file");
-	toolsMenu->AppendSeparator();
-	toolsMenu->Append(wxID_PREFERENCES, "&Settings");
+   toolsMenu->Append(wxID_ANY, "View s&ystem-wide configuration file");
+   toolsMenu->Append(wxID_ANY, "View &user-specific configuration file");
+   toolsMenu->AppendSeparator();
+   toolsMenu->Append(wxID_PREFERENCES, "&Settings");
 
-	wxWindowID myID_ONE_THREE = NewControlId();
-	plugInMenu->Append(myID_ONE_THREE, "OneToThree");
+   wxWindowID myID_ONE_THREE = NewControlId();
+   plugInMenu->Append(myID_ONE_THREE, "OneToThree");
 
-	helpMenu->Append(wxID_ABOUT, "&About TrackHack");
+   helpMenu->Append(wxID_ABOUT, "&About TrackHack");
 
-	menuBar->Append(fileMenu, "&File");
-	menuBar->Append(editMenu, "&Edit");
-	menuBar->Append(viewMenu, "&View");
-	menuBar->Append(toolsMenu, "&Tools");
-	menuBar->Append(plugInMenu, "&Plug-ins");
-	menuBar->Append(helpMenu, "&Help");
+   menuBar->Append(fileMenu, "&File");
+   menuBar->Append(editMenu, "&Edit");
+   menuBar->Append(viewMenu, "&View");
+   menuBar->Append(toolsMenu, "&Tools");
+   menuBar->Append(plugInMenu, "&Plug-ins");
+   menuBar->Append(helpMenu, "&Help");
 
-	SetMenuBar(menuBar);
-	///
-	//// </_menu_bar_construction_> ////
+   SetMenuBar(menuBar);
+   ///
+   //// </_menu_bar_construction_> ////
 
-	//// <_event_handler_mappings_> ////
-	///
-	Bind(wxEVT_COMMAND_TEXT_ENTER, &MainFrame::onTrackeeBoxEnter, this, myID_TRACKEEBOX);
-	Bind(wxEVT_COMMAND_LISTBOX_SELECTED, &MainFrame::onTrackeeBoxSelected, this, myID_TRACKEEBOX);
+   //// <_event_handler_mappings_> ////
+   ///
+   Bind(wxEVT_COMMAND_TEXT_ENTER, &MainFrame::onTrackeeBoxEnter, this, myID_TRACKEEBOX);
+   Bind(wxEVT_COMMAND_LISTBOX_SELECTED, &MainFrame::onTrackeeBoxSelected, this,
+      myID_TRACKEEBOX);
 
-	Bind(wxEVT_COMMAND_LISTBOX_SELECTED, &MainFrame::onMarkBoxSelected, this, myID_LINKBOX);
+   Bind(wxEVT_COMMAND_LISTBOX_SELECTED, &MainFrame::onMarkBoxSelected, this,
+      myID_LINKBOX);
 
-	Bind(myEVT_TRACKPANEL_MARKED, &MainFrame::onTrackPanelMarked, this, wxID_ANY);
+   Bind(myEVT_TRACKPANEL_MARKED, &MainFrame::onTrackPanelMarked, this, wxID_ANY);
 
-	Bind(wxEVT_SCROLL_THUMBTRACK, &MainFrame::onScrollThumbtrack, this, wxID_ANY);
-	Bind(wxEVT_SCROLL_CHANGED, &MainFrame::onScrollChanged, this, wxID_ANY);
-	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::onSlider, this, wxID_ANY);
+   Bind(wxEVT_SCROLL_THUMBTRACK, &MainFrame::onScrollThumbtrack, this, wxID_ANY);
+   Bind(wxEVT_SCROLL_CHANGED, &MainFrame::onScrollChanged, this, wxID_ANY);
+   Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::onSlider, this, wxID_ANY);
 
-	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onOpen, this, wxID_OPEN);
-	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onSave, this, wxID_SAVE);
-	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onTrack, this, myID_TRACK);
-	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onDeleteTrackee, this, myID_DELETE_TRACKEE);
-	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onRemoveLink, this, myID_REMOVE_LINK);
-	Bind(wxEVT_COMMAND_MENU_SELECTED, std::bind(&MainFrame::Close, this, true), wxID_EXIT); // wxWindow::Close(true)
-	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onAbout, this, wxID_ABOUT);
+   Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onOpen, this, wxID_OPEN);
+   Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onSave, this, wxID_SAVE);
+   Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onTrack, this, myID_TRACK);
+   Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onDeleteTrackee, this,
+      myID_DELETE_TRACKEE);
+   Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onRemoveLink, this, myID_REMOVE_LINK);
+   // wxWindow::Close(true)
+   Bind(wxEVT_COMMAND_MENU_SELECTED, std::bind(&MainFrame::Close, this, true), wxID_EXIT);
+   Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onAbout, this, wxID_ABOUT);
 
-	Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onOneThroughThree, this, myID_ONE_THREE);
+   Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onOneThroughThree, this, myID_ONE_THREE);
 
-	Bind(myEVT_TRACKING_COMPLETED, &MainFrame::onTrackingCompleted, this, wxID_ANY);
+   Bind(myEVT_TRACKING_COMPLETED, &MainFrame::onTrackingCompleted, this, wxID_ANY);
 
-	Bind(wxEVT_CLOSE_WINDOW, &MainFrame::onClose, this);
-	///
-	//// </_event_handler_mappings_> ////
+   Bind(wxEVT_CLOSE_WINDOW, &MainFrame::onClose, this);
+   ///
+   //// </_event_handler_mappings_> ////
 }
 ///
 //// <_/constructors_> ////
@@ -158,10 +163,12 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
 ///
 wxThread::ExitCode MainFrame::Entry()
 {
-	tracker.track(trackees, *movie);
+   tracker.track(trackees, *movie);
 
-	QueueEvent(new wxThreadEvent{myEVT_TRACKING_COMPLETED}); // processed during the next event loop iteration
-	return wxThread::ExitCode{0};
+   // processed during the next event loop iteration
+   QueueEvent(new wxThreadEvent{myEVT_TRACKING_COMPLETED});
+
+   return wxThread::ExitCode{0};
 }
 
 ///
@@ -171,393 +178,409 @@ wxThread::ExitCode MainFrame::Entry()
 ///
 void MainFrame::onTrackeeBoxEnter(wxCommandEvent& event)
 {
-	std::string key = event.GetString().ToStdString();
-	auto pair = trackees.insert(std::make_pair(key, Trackee{9, movie->getSize()})); // ...
-	assert (std::get<1>(pair));
+   std::string key = event.GetString().ToStdString();
+   auto pair = trackees.insert(std::make_pair(key, Trackee{9, movie->getSize()})); // ...
+   assert (std::get<1>(pair));
 
-	trackPanel->addTrack(key, std::get<1>(*std::get<0>(pair)).getTrack());
-	trackPanel->useDrawingToolsOf(key);
-	trackPanel->Refresh(false);
+   trackPanel->addTrack(key, std::get<1>(*std::get<0>(pair)).getTrack());
+   trackPanel->useDrawingToolsOf(key);
+   trackPanel->Refresh(false);
 
-	if (markBox->IsShown())
-	{
-		assert (!markBox->IsEmpty());
-		markBox->Clear();
-		markBox->Hide();
-		topPanel->Layout();
-	}
-	// wxWindow::GetEffectiveMinSize() is, as per its documentation, "the value used by sizers to determine
-	// the appropriate amount of space to allocate for the widget" and "called by a wxSizer when it
-	// queries the size of a window or control"; as *listBox is added to its sizer with a proportion of 0,
-	// that should be the value the sizer ends up giving it (afaics); thus, this condition should
-	// determine if posting a size event to *listBox' parent would change anything.
-	else if (trackeeBox->GetEffectiveMinSize().GetHeight() != trackeeBox->GetSize().GetHeight())
-	{
-		// from the documentation of wxWindow::SendSizeEvent():
-		// "It is sometimes useful to call this function after [...] a child size changes.
-		// Note that if the frame is using [...] sizers [...], it is enough to call wxWindow::Layout()
-		// directly and this function should not be used [...]."
-		topPanel->Layout();
-	}
+   if (markBox->IsShown())
+   {
+      assert (!markBox->IsEmpty());
+      markBox->Clear();
+      markBox->Hide();
+      topPanel->Layout();
+   }
+   // wxWindow::GetEffectiveMinSize() is, as per its documentation, "the value used by
+   // sizers to determine the appropriate amount of space to allocate for the widget" and
+   // "called by a wxSizer when it queries the size of a window or control"; as *listBox
+   // is added to its sizer with a proportion of 0, that should be the value the sizer
+   // ends up giving it (afaics); thus, this condition should determine if posting a size
+   // event to *listBox' parent would change anything.
+   else if (trackeeBox->GetEffectiveMinSize().GetHeight() !=
+            trackeeBox->GetSize().GetHeight())
+   {
+      // From the documentation of wxWindow::SendSizeEvent(): "It is sometimes useful to
+      // call this function after [...] a child size changes.  Note that if the frame is
+      // using [...] sizers [...], it is enough to call wxWindow::Layout() directly and
+      // this function should not be used [...]."
+      topPanel->Layout();
+   }
 
-	GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
-	GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+   GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
+   GetMenuBar()->Enable(myID_REMOVE_LINK, false);
 
-	// don't Skip() the event
+   // Don't Skip() the event.
 }
 
 namespace {
-	wxString makeMarkString(std::size_t); // ...
+   wxString makeMarkString(std::size_t); // ...
 }
 
 void MainFrame::onTrackeeBoxSelected(wxCommandEvent& event)
 {
-	std::string key = event.GetString().ToStdString();
+   std::string key = event.GetString().ToStdString();
 
-	auto cachedEffectiveMinHeight = markBox->GetEffectiveMinSize().GetHeight();
+   auto cachedEffectiveMinHeight = markBox->GetEffectiveMinSize().GetHeight();
 
-	markBox->Clear();
-	for (std::size_t i : marks[key])
-		markBox->Append(makeMarkString(i));
+   markBox->Clear();
+   for (std::size_t i : marks[key])
+      markBox->Append(makeMarkString(i));
 
-	// ...
-	if (markBox->IsShown()) {
-		if (markBox->IsEmpty()) {
-			markBox->Hide();
-			topPanel->Layout();
-		}
-		else if (markBox->GetEffectiveMinSize().GetHeight() != cachedEffectiveMinHeight) {
-			topPanel->Layout();
-		}
-	}
-	else if (!markBox->IsEmpty()) { // mark box is not shown; should it be?
-		markBox->Show();
-		topPanel->Layout();
-	}
-	// ...
-	auto iterator = std::find(marks[key].begin(), marks[key].end(), movieSlider->GetValue());
-	if (iterator != marks[key].end()) {
-		markBox->SetSelection(iterator - marks[key].begin());
-		GetMenuBar()->Enable(myID_REMOVE_LINK, true);
-	}
-	else {
-		GetMenuBar()->Enable(myID_REMOVE_LINK, false);
-	}
+   // ...
+   if (markBox->IsShown()) {
+      if (markBox->IsEmpty()) {
+         markBox->Hide();
+         topPanel->Layout();
+      }
+      else if (markBox->GetEffectiveMinSize().GetHeight() != cachedEffectiveMinHeight) {
+         topPanel->Layout();
+      }
+   }
+   else if (!markBox->IsEmpty()) { // mark box is not shown; should it be?
+      markBox->Show();
+      topPanel->Layout();
+   }
+   // ...
+   auto iterator = std::find(marks[key].begin(), marks[key].end(),
+      movieSlider->GetValue());
+   if (iterator != marks[key].end()) {
+      markBox->SetSelection(iterator - marks[key].begin());
+      GetMenuBar()->Enable(myID_REMOVE_LINK, true);
+   }
+   else {
+      GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+   }
 
-	GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
+   GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
 
-	trackPanel->useDrawingToolsOf(key);
-	trackPanel->Refresh(false);
+   trackPanel->useDrawingToolsOf(key);
+   trackPanel->Refresh(false);
 
-	// no event.Skip() necessary
+   // No event.Skip() necessary.
 }
 
 void MainFrame::onMarkBoxSelected(wxCommandEvent& event)
 {
-	auto trackeeKey = trackeeBox->getStringSelection().ToStdString();
-	movieSlider->SetValue(marks[trackeeKey][event.GetSelection()]); // doesn't generate an event
-	trackPanel->setBitmap(getBitmap(movieSlider->GetValue()));
-	trackPanel->focusIndex(movieSlider->GetValue());
-	trackPanel->Refresh(false);
+   auto trackeeKey = trackeeBox->getStringSelection().ToStdString();
+   movieSlider->SetValue(marks[trackeeKey][event.GetSelection()]); // doesn't generate an
+                                                                   // event.
+   trackPanel->setBitmap(getBitmap(movieSlider->GetValue()));
+   trackPanel->focusIndex(movieSlider->GetValue());
+   trackPanel->Refresh(false);
 
-	// no event.Skip() necessary
+   // No event.Skip() necessary.
 }
 
 void MainFrame::onTrackPanelMarked(TrackPanelEvent& event)
 {
-	auto trackeeKey = trackeeBox->getStringSelection().ToStdString();
+   auto trackeeKey = trackeeBox->getStringSelection().ToStdString();
 
-	if (!trackeeKey.empty())
-	{
-		trackees[trackeeKey].setPoint(movieSlider->GetValue(), Point{event.getPoint().x, event.getPoint().y});
+   if (!trackeeKey.empty())
+   {
+      trackees[trackeeKey].setPoint(movieSlider->GetValue(),
+         Point{event.getPoint().x, event.getPoint().y});
 
-		// shadows data member marks
-		std::vector<std::size_t>& marks = this->marks[trackeeKey];
+      // Shadows data member "marks".
+      std::vector<std::size_t>& marks = this->marks[trackeeKey];
 
-		// iterator to the first element in marks that does not compare less than movieSlider->GetValue()
-		auto iterator = std::lower_bound(marks.begin(), marks.end(), movieSlider->GetValue());
+      // iterator to the first element in marks that does not compare less than
+      // movieSlider->GetValue()
+      auto iterator = std::lower_bound(marks.begin(), marks.end(),
+         movieSlider->GetValue());
 
-		if (iterator == marks.end() || static_cast<int>(*iterator) != movieSlider->GetValue()) {
-			// insert before iterator, invalidating all previously obtained iterators,
-			iterator = marks.insert(iterator, movieSlider->GetValue()); // references and pointers
-		}
+      if (iterator == marks.end() ||
+          static_cast<int>(*iterator) != movieSlider->GetValue())
+      {
+         // insert before iterator, invalidating all previously obtained iterators,
+         // references and pointers
+         iterator = marks.insert(iterator, movieSlider->GetValue());
+      }
 
-		// define which part of the track need be computed anew by assigning {-1, -1} to all points that might
-		// change due to the new definitive point if tracking is done again
-		{
-			std::size_t i = (iterator == marks.begin()) ? 0 : *(iterator - 1) + 1;
-			for (; i < static_cast<unsigned>(movieSlider->GetValue()); ++i)
-			{
-				trackees[trackeeKey].setPoint(i, Point{-1, -1});
-			}
-			i = (iterator + 1 == marks.end()) ? movie->getSize() - 1 : *(iterator + 1) - 1;
-			for (; i > static_cast<unsigned>(movieSlider->GetValue()); --i)
-			{
-				trackees[trackeeKey].setPoint(i, Point{-1, -1});
-			}
-		}
+      // Define which part of the track need be computed anew by assigning {-1, -1} to all
+      // points that might change due to the new definitive point if tracking is done
+      // again.
+      {
+         std::size_t i = (iterator == marks.begin()) ? 0 : *(iterator - 1) + 1;
+         for (; i < static_cast<unsigned>(movieSlider->GetValue()); ++i)
+         {
+            trackees[trackeeKey].setPoint(i, Point{-1, -1});
+         }
+         i = (iterator + 1 == marks.end()) ? movie->getSize() - 1 : *(iterator + 1) - 1;
+         for (; i > static_cast<unsigned>(movieSlider->GetValue()); --i)
+         {
+            trackees[trackeeKey].setPoint(i, Point{-1, -1});
+         }
+      }
 
-		if (markBox->FindString(makeMarkString(movieSlider->GetValue())) == wxNOT_FOUND)
-		{
-			auto cachedEffectiveMinHeight = markBox->GetEffectiveMinSize().GetHeight();
+      if (markBox->FindString(makeMarkString(movieSlider->GetValue())) == wxNOT_FOUND)
+      {
+         auto cachedEffectiveMinHeight = markBox->GetEffectiveMinSize().GetHeight();
 
-			markBox->SetSelection(
-				markBox->Insert(makeMarkString(movieSlider->GetValue()), iterator - marks.begin())
-			);
-			GetMenuBar()->Enable(myID_REMOVE_LINK, true);
+         markBox->SetSelection(markBox->Insert(makeMarkString(movieSlider->GetValue()),
+            iterator - marks.begin()));
+         GetMenuBar()->Enable(myID_REMOVE_LINK, true);
 
-			// ...
-			if (!markBox->IsShown()) {
-				markBox->Show();
-				topPanel->Layout();
-			}
-			else if (markBox->GetEffectiveMinSize().GetHeight() != cachedEffectiveMinHeight) {
-				topPanel->Layout();
-			}
-		}
-	}
-	// don't Skip() the event
+         // ...
+         if (!markBox->IsShown()) {
+            markBox->Show();
+            topPanel->Layout();
+         }
+         else if (markBox->GetEffectiveMinSize().GetHeight() != cachedEffectiveMinHeight)
+         {
+            topPanel->Layout();
+         }
+      }
+   }
+   // Don't Skip() the event.
 }
 
 void MainFrame::onScrollChanged(wxScrollEvent& event)
 {
-	// topPanel->Layout() would be necessary but all bitmaps in a movie are required to be of equal size
-	trackPanel->setBitmap(getBitmap(event.GetPosition()));
+   // topPanel->Layout() would be necessary but all bitmaps in a movie are required to be
+   // of equal size.
+   trackPanel->setBitmap(getBitmap(event.GetPosition()));
 }
 
 void MainFrame::onScrollThumbtrack(wxScrollEvent& event)
 {
-	trackPanel->setBitmap(getBitmap(event.GetPosition()));
+   trackPanel->setBitmap(getBitmap(event.GetPosition()));
 }
 
 void MainFrame::onSlider(wxCommandEvent&)
 {
-	//trackPanel->setBitmap(getBitmap(movieSlider->GetValue()));
-	{
-		// ...
-		std::vector<std::size_t>& marks = this->marks[trackeeBox->getStringSelection().ToStdString()];
-		auto iterator = std::find(marks.begin(), marks.end(), movieSlider->GetValue());
-		if (iterator != marks.end()) {
-			markBox->SetSelection(iterator - marks.begin());
-			GetMenuBar()->Enable(myID_REMOVE_LINK, true);
-		} else {
-			markBox->SetSelection(wxNOT_FOUND);
-			GetMenuBar()->Enable(myID_REMOVE_LINK, false);
-		}
-	}
+   //trackPanel->setBitmap(getBitmap(movieSlider->GetValue()));
+   {
+      // ...
+      std::vector<std::size_t>& marks =
+         this->marks[trackeeBox->getStringSelection().ToStdString()];
+      auto iterator = std::find(marks.begin(), marks.end(), movieSlider->GetValue());
+      if (iterator != marks.end()) {
+         markBox->SetSelection(iterator - marks.begin());
+         GetMenuBar()->Enable(myID_REMOVE_LINK, true);
+      } else {
+         markBox->SetSelection(wxNOT_FOUND);
+         GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+      }
+   }
 
-	trackPanel->focusIndex(movieSlider->GetValue());
-	trackPanel->Refresh(false);
+   trackPanel->focusIndex(movieSlider->GetValue());
+   trackPanel->Refresh(false);
 }
 
 void MainFrame::onOpen(wxCommandEvent&)
 {
-	wxString dir, regEx;
+   wxString dir, regEx;
 
-	wxFileHistory dirHistory{7}; // seven
-	dirHistory.Load(*wxConfigBase::Get());
+   wxFileHistory dirHistory{7}; // Seven.
+   dirHistory.Load(*wxConfigBase::Get());
 
-	OpenMovieWizard wiz{this, wxID_ANY, &dir, &regEx, wxConfigBase::Get(), &dirHistory};
+   OpenMovieWizard wiz{this, wxID_ANY, &dir, &regEx, wxConfigBase::Get(), &dirHistory};
 
-	if (wiz.RunWizard()) // the user did not cancel the wizard ...
-	{
-		dirHistory.AddFileToHistory(dir);
-		dirHistory.Save(*wxConfigBase::Get());
+   if (wiz.RunWizard()) // The user did not cancel the wizard.
+   {
+      dirHistory.AddFileToHistory(dir);
+      dirHistory.Save(*wxConfigBase::Get());
 
-		std::unique_ptr<Movie> newMovie{new Movie{dir.ToStdString(), regEx.ToStdString()}};
+      std::unique_ptr<Movie> newMovie{new Movie{dir.ToStdString(), regEx.ToStdString()}};
 
-		if (newMovie->getSize() > 1) // ... and selected a movie with at least two frames
-		{
-			movie = std::move(newMovie);
+      if (newMovie->getSize() > 1) // And selected a movie with at least two frames.
+      {
+         movie = std::move(newMovie);
 
-			GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
-			GetMenuBar()->Enable(myID_REMOVE_LINK, false);
-			trackeeBox->reset();
-			trackeeBox->SetFocus();
-			markBox->Clear();
-			markBox->Hide();
-			trackPanel->reset();
+         GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
+         GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+         trackeeBox->reset();
+         trackeeBox->SetFocus();
+         markBox->Clear();
+         markBox->Hide();
+         trackPanel->reset();
 
-			marks.clear();
-			trackees.clear();
+         marks.clear();
+         trackees.clear();
 
-			movieSlider->SetRange(0, movie->getSize() - 1);
-			movieSlider->SetValue(0);                      // does not post or queue an event
-			trackPanel->setBitmap(getBitmap(0));
+         movieSlider->SetRange(0, movie->getSize() - 1);
+         movieSlider->SetValue(0); // does not post or queue an event
+         trackPanel->setBitmap(getBitmap(0));
 
-			// first, invoke the sizer-based layout algorithm for topPanel, THEN cause movieSlider to be repainted
-			topPanel->Layout();       // somehow repainting only movieSlider (movieSlider->Refresh())
-			                          // is not enough to fix it but ...
-			topPanel->Refresh(false); // ... most of topPanels other children have to be repainted anyway
-		}
-	}
+         // First, invoke the sizer-based layout algorithm for topPanel, THEN cause
+         // movieSlider to be repainted.
+         topPanel->Layout();       // Somehow repainting only movieSlider
+                                   // (movieSlider->Refresh()) is not enough to fix it but
+         topPanel->Refresh(false); // most of topPanels other children have to be
+                                   // repainted anyway.
+      }
+   }
 }
 
 void MainFrame::onSave(wxCommandEvent&)
 {
-	// ...
-	for (const auto& pair : trackees)
-	{
-		const std::string key = std::get<0>(pair);
-		const Trackee trackee = std::get<1>(pair);
+   for (const auto& pair : trackees)
+   {
+      const std::string key = std::get<0>(pair);
+      const Trackee trackee = std::get<1>(pair);
 
-		std::shared_ptr<const Track> track = trackee.getTrack().lock();
+      std::shared_ptr<const Track> track = trackee.getTrack().lock();
 
-		std::ofstream oStream{movie->getDir() + key + "_track.txt"};
+      std::ofstream oStream{movie->getDir() + key + "_track.txt"};
 
-		for (std::size_t i = 0; i < movie->getSize(); ++i)
-		{
-			oStream << movie->getFrame(i).getFilename() << '\t' << (*track)[i].x << '\t' << (*track)[i].y << std::endl;
-		}
-		oStream.close();
-	}
+      for (std::size_t i = 0; i < movie->getSize(); ++i)
+      {
+         oStream << movie->getFrame(i).getFilename() << '\t' << (*track)[i].x << '\t' <<
+            (*track)[i].y << std::endl;
+      }
+      oStream.close();
+   }
 }
 
 void MainFrame::onTrack(wxCommandEvent&)
 {
-	if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR) {
-		return;
-	}
-	if (GetThread()->Run() != wxTHREAD_NO_ERROR) {
-		return;
-	}
+   if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR) {
+      return;
+   }
+   if (GetThread()->Run() != wxTHREAD_NO_ERROR) {
+      return;
+   }
 
-	//trackPanel->SetEvtHandlerEnabled(false);
-	trackeeBox->Disable();
-	trackPanel->Disable();
+   //trackPanel->SetEvtHandlerEnabled(false);
+   trackeeBox->Disable();
+   trackPanel->Disable();
 
-	GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
-	GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+   GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
+   GetMenuBar()->Enable(myID_REMOVE_LINK, false);
 }
 
 void MainFrame::onDeleteTrackee(wxCommandEvent&)
 {
-	std::string key = trackeeBox->getStringSelection().ToStdString();
-	assert(!key.empty());
+   std::string key = trackeeBox->getStringSelection().ToStdString();
+   assert(!key.empty());
 
-	std::size_t erasedElements = trackees.erase(key);
-	assert(erasedElements == 1);
+   std::size_t erasedElements = trackees.erase(key);
+   assert(erasedElements == 1);
 
-	erasedElements = marks.erase(key);
+   erasedElements = marks.erase(key);
 
-	trackeeBox->deleteSelection();
-	trackPanel->eraseTrack(key);
+   trackeeBox->deleteSelection();
+   trackPanel->eraseTrack(key);
 
-	// since no trackee will be selected now ...
-	GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
-	GetMenuBar()->Enable(myID_REMOVE_LINK, false);
-	markBox->Clear();
-	markBox->Hide();
-	topPanel->Layout();
+   // Since no trackee will be selected now ...
+   GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
+   GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+   markBox->Clear();
+   markBox->Hide();
+   topPanel->Layout();
 
-	trackPanel->Refresh(false);
+   trackPanel->Refresh(false);
 }
 
 void MainFrame::onRemoveLink(wxCommandEvent&)
 {
-
+   // TODO.
 }
 
 void MainFrame::onAbout(wxCommandEvent&)
 {
-	wxAboutDialogInfo info;
-	info.SetName(u8"TrackHack");
-	info.SetDescription(u8"This is a simple program for tracking objects in a movie "
-		"composed of individual grayscale images; tracking is based on intensity peaks and speed caps.");
+   wxAboutDialogInfo info;
+   info.SetName(u8"TrackHack");
+   info.SetDescription(u8"This is a simple program for tracking objects in a movie "
+      "composed of individual grayscale images; tracking is based on intensity peaks and "
+      "speed caps.");
 
-	::wxAboutBox(info, this);
+   ::wxAboutBox(info, this);
 }
 
 void MainFrame::onOneThroughThree(wxCommandEvent&)
 {
-	std::string key = trackeeBox->getStringSelection().ToStdString();
-	if (!key.empty()) {
-		auto it = trackees.find(key);
-		if (it != trackees.end()) {
-			const Trackee& trackee = std::get<1>(*it);
-			std::shared_ptr<const Track> track = trackee.getTrack().lock();
-			if (track) {
-				const Point& point = (*track)[movieSlider->GetValue()];
-				oneThroughThree(getBitmap(movieSlider->GetValue()), wxPoint{point.x, point.y},
-				                movie.get(), &key, &trackee);
-			}
-		}
-	}
+   std::string key = trackeeBox->getStringSelection().ToStdString();
+   if (!key.empty()) {
+      auto it = trackees.find(key);
+      if (it != trackees.end()) {
+         const Trackee& trackee = std::get<1>(*it);
+         std::shared_ptr<const Track> track = trackee.getTrack().lock();
+         if (track) {
+            const Point& point = (*track)[movieSlider->GetValue()];
+            oneThroughThree(getBitmap(movieSlider->GetValue()), wxPoint{point.x, point.y},
+                            movie.get(), &key, &trackee);
+         }
+      }
+   }
 }
 
 void MainFrame::onTrackingCompleted(wxThreadEvent&)
 {
-	trackeeBox->Enable();
-	trackPanel->Enable();
+   trackeeBox->Enable();
+   trackPanel->Enable();
 
-	GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
-	GetMenuBar()->Enable(myID_REMOVE_LINK, true);
+   GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
+   GetMenuBar()->Enable(myID_REMOVE_LINK, true);
 
-	trackPanel->Refresh(false);
+   trackPanel->Refresh(false);
 }
 
 void MainFrame::onClose(wxCloseEvent& event)
 {
-	// true if tracking was started and is still working
-	if (GetThread() && GetThread()->IsRunning()) {
-		GetThread()->Wait(); // join
-	}
+   // true if tracking was started and is still working.
+   if (GetThread() && GetThread()->IsRunning()) {
+      GetThread()->Wait(); // join
+   }
 
-	event.Skip(); // the default handler will call this->Destroy()
+   event.Skip(); // The default handler will call this->Destroy().
 }
 ///
 //// </_event_handler_definitions> ////
 
 wxBitmap MainFrame::getBitmap(std::size_t index)
 {
-	//std::shared_ptr<const Bitmap> bitmap = movie.getFrame(index).getBitmap(false);
-	std::shared_ptr<const Bitmap> bitmap = movie->getFrame(index).getBitmap(true);
-	wxBitmap nativeBitmap;
+   //std::shared_ptr<const Bitmap> bitmap = movie.getFrame(index).getBitmap(false);
+   std::shared_ptr<const Bitmap> bitmap = movie->getFrame(index).getBitmap(true);
+   wxBitmap nativeBitmap;
 
-	if (bitmap)
-	{
-		nativeBitmap.Create(bitmap->width, bitmap->height, 24);
-		wxNativePixelData pixelData{nativeBitmap};
-		wxNativePixelData::Iterator iterator{pixelData};
+   if (bitmap)
+   {
+      nativeBitmap.Create(bitmap->width, bitmap->height, 24);
+      wxNativePixelData pixelData{nativeBitmap};
+      wxNativePixelData::Iterator iterator{pixelData};
 
-		for (std::size_t row = 0; row < bitmap->height; ++row)
-		{
-			iterator.MoveTo(pixelData, 0, row);
-			for (std::size_t column = 0; column < bitmap->width; ++column)
-			{
-				iterator.Red() = iterator.Green() = iterator.Blue() = (*bitmap)[row][column];
-				++iterator;
-			}
-		}
-	}
-	/*else
-	{
-		nativeBitmap.LoadFile(movie.getFilename(index), wxBITMAP_TYPE_ANY);
-		wxNativePixelData pixelData{nativeBitmap};
-		wxNativePixelData::Iterator iterator{pixelData};
+      for (std::size_t row = 0; row < bitmap->height; ++row)
+      {
+         iterator.MoveTo(pixelData, 0, row);
+         for (std::size_t column = 0; column < bitmap->width; ++column)
+         {
+            iterator.Red() = iterator.Green() = iterator.Blue() = (*bitmap)[row][column];
+            ++iterator;
+         }
+      }
+   }
+   /*else
+   {
+      nativeBitmap.LoadFile(movie.getFilename(index), wxBITMAP_TYPE_ANY);
+      wxNativePixelData pixelData{nativeBitmap};
+      wxNativePixelData::Iterator iterator{pixelData};
 
-		bitmap = std::make_shared<Bitmap>(nativeBitmap.GetWidth(), nativeBitmap.GetHeight());
+      bitmap = std::make_shared<Bitmap>(nativeBitmap.GetWidth(), nativeBitmap.GetHeight());
 
-		for (std::size_t row = 0; row < bitmap->height; ++row)
-		{
-			iterator.MoveTo(pixelData, 0, row);
-			for (std::size_t column = 0; column < bitmap->width; ++column)
-			{
-				(*bitmap)[row][column] = iterator.Red();
-				++iterator;
-			}
-		}
-		movie.getFrame(index).setBitmap(bitmap);
-	}*/
-	return nativeBitmap;
+      for (std::size_t row = 0; row < bitmap->height; ++row)
+      {
+         iterator.MoveTo(pixelData, 0, row);
+         for (std::size_t column = 0; column < bitmap->width; ++column)
+         {
+            (*bitmap)[row][column] = iterator.Red();
+            ++iterator;
+         }
+      }
+      movie.getFrame(index).setBitmap(bitmap);
+   }*/
+   return nativeBitmap;
 }
 
 namespace {
-	wxString makeMarkString(std::size_t i)
-	{
-		std::stringstream sStream; sStream << i;
-		return sStream.str();
-	}
+   wxString makeMarkString(std::size_t i)
+   {
+      std::stringstream sStream; sStream << i;
+      return sStream.str();
+   }
 }
 
 wxDEFINE_EVENT(myEVT_TRACKING_COMPLETED, wxThreadEvent);
@@ -567,35 +590,38 @@ wxDEFINE_EVENT(myEVT_TRACKING_COMPLETED, wxThreadEvent);
 template <std::size_t N>
 void createBitmaps(std::string name)
 {
-	constexpr std::size_t SIZE = 24 * 24 / 8;
-	//std::array<std::array<char, SIZE>, N>* xBitMaps = new std::array<std::array<char, SIZE>, N>;
-	std::array<std::array<char, SIZE>, N> xBitMaps;
+   constexpr std::size_t SIZE = 24 * 24 / 8;
+   //std::array<std::array<char, SIZE>, N>* xBitMaps =
+      //new std::array<std::array<char, SIZE>, N>;
+   std::array<std::array<char, SIZE>, N> xBitMaps;
 
-	for (std::size_t i = 0; i < N; ++i)
-	{
-		//std::array<char, SIZE>& bits = (*xBitMaps)[i];
-		std::array<char, SIZE>& bits = xBitMaps[i];
-		for (std::size_t j = 0; j < bits.size(); ++j)
-			bits[j] = ~bits[j];
+   for (std::size_t i = 0; i < N; ++i)
+   {
+      //std::array<char, SIZE>& bits = (*xBitMaps)[i];
+      std::array<char, SIZE>& bits = xBitMaps[i];
+      for (std::size_t j = 0; j < bits.size(); ++j)
+         bits[j] = ~bits[j];
 
-		for (std::size_t j = 0 + 3 + 1; j < 24 - 3 + 1; j = j + 3)
-			bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong();
-		for (std::size_t j = 24 + 3 + 2; j < 48 - 3 + 2; j = j + 3)
-			bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong();
-		for (std::size_t j = 48 + 3; j < 72 - 3;) {
-			bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong(); ++j;
-			bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong(); ++j;
-			bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong(); ++j;
-		}
+      for (std::size_t j = 0 + 3 + 1; j < 24 - 3 + 1; j = j + 3)
+         bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong();
+      for (std::size_t j = 24 + 3 + 2; j < 48 - 3 + 2; j = j + 3)
+         bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong();
+      for (std::size_t j = 48 + 3; j < 72 - 3;) {
+         bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong(); ++j;
+         bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong(); ++j;
+         bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong(); ++j;
+      }
 
-		wxBitmap bitmap{bits.data(), 24, 24};
+      wxBitmap bitmap{bits.data(), 24, 24};
 
-		std::stringstream sStream;
-		sStream << std::setfill('0') << std::setw(2) << i;
-		bitmap.ConvertToImage().SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
-	}
+      std::stringstream sStream;
+      sStream << std::setfill('0') << std::setw(2) << i;
+      bitmap.ConvertToImage().SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
+   }
 
-	//delete[] xBitMaps;
+   //delete[] xBitMaps;
 }
 ///
 //// </_no_comment_> ////
+
+// vim: tw=90 sw=3 et
