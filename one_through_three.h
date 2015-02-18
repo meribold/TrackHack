@@ -9,6 +9,9 @@
 #include "movie.h"
 #include "trackee.h"
 
-void oneThroughThree(const wxBitmap&, const wxPoint&, const Movie*, const std::string* trackeeKey, const Trackee*);
+void oneThroughThree(const wxBitmap&, const wxPoint&, const Movie*,
+   const std::string* trackeeKey, const Trackee*);
 
 #endif //ONE_THROUGH_THREE_H
+
+// vim: tw=90 sw=3 et
