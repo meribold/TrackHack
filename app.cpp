@@ -6,44 +6,50 @@
 
 class App : public wxApp
 {
-	public:
+   public:
 
-	virtual bool OnInit(); // add override when switching no a more recent version of GCC
+   virtual bool OnInit(); // Add override when switching to a more recent version of GCC.
 
-	private:
+   private:
 
-	MainFrame* mainFrame;
+   MainFrame* mainFrame;
 };
 
 IMPLEMENT_APP(App)
 
 bool App::OnInit()
 {
-	SetAppName(u8"TrackHack");
-	SetAppDisplayName(u8"TrackHack");
+   SetAppName(u8"TrackHack");
+   SetAppDisplayName(u8"TrackHack");
 
-	wxFileName localFileName = wxFileConfig::GetLocalFile("track_hack.ini", wxCONFIG_USE_SUBDIR);
-	if (!localFileName.FileExists() && // does the user-specific configuration file exist? If not,
-	    !localFileName.DirExists())    // does the directory where it would have been not exist either?
-	{
-		// create that directory
-		bool success = wxFileName::Mkdir(localFileName.GetPath(), wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);
+   wxFileName localFileName = wxFileConfig::GetLocalFile("track_hack.ini",
+      wxCONFIG_USE_SUBDIR);
+   if (!localFileName.FileExists() && // Does the user-specific configuration file exist?
+       !localFileName.DirExists())    // If not, does the directory where it would have
+                                      // been not exist either?
+   {
+      // Create that directory.
+      bool success = wxFileName::Mkdir(localFileName.GetPath(), wxS_DIR_DEFAULT,
+         wxPATH_MKDIR_FULL);
 
-		if (!success) { // assert success in creating it; otherwise terminate
-			::wxLogFatalError("Failed to create local configuration directory: %s\n\nTerminating.",
-				localFileName.GetPath());
-		}
-	}
+      if (!success) { // Assert success in creating it; otherwise terminate.
+         ::wxLogFatalError("Failed to create local configuration directory: "
+            "%s\n\nTerminating.", localFileName.GetPath());
+      }
+   }
 
-	wxConfigBase::Set(new wxFileConfig{u8"TrackHack", wxEmptyString, u8"track_hack.ini", u8"track_hack.ini",
-		 wxCONFIG_USE_LOCAL_FILE | wxCONFIG_USE_GLOBAL_FILE | wxCONFIG_USE_SUBDIR});
+   wxConfigBase::Set(new wxFileConfig{u8"TrackHack", wxEmptyString, u8"track_hack.ini",
+      u8"track_hack.ini", wxCONFIG_USE_LOCAL_FILE | wxCONFIG_USE_GLOBAL_FILE |
+      wxCONFIG_USE_SUBDIR});
 
-	// no wxInitAllImageHandlers() as for now only the BMP/DIB file format is supported
+   // No wxInitAllImageHandlers() as for now, only the BMP/DIB file format is supported.
 
-	mainFrame = new MainFrame(wxDefaultPosition, wxSize(640, 720));
+   mainFrame = new MainFrame(wxDefaultPosition, wxSize(640, 720));
 
-	mainFrame->Show(true);
-	SetTopWindow(mainFrame);
+   mainFrame->Show(true);
+   SetTopWindow(mainFrame);
 
-	return true;
+   return true;
 }
+
+// vim: tw=90 sw=3 et
