@@ -3,7 +3,7 @@ CXX      := g++
 WXCONFIG := wx-config
 IDIRS    := /c/boost/boost_1_49_0
 CXXFLAGS := -std=c++14 -Wall -Wextra -Wno-old-style-cast -pedantic -g -c \
-	    $$($(WXCONFIG) --cxxflags) $(addprefix -I, $(IDIRS))
+            $$($(WXCONFIG) --cxxflags) $(addprefix -I, $(IDIRS))
 CPPFLAGS := -std=c++14 $$($(WXCONFIG) --cppflags)
 LDIRS    := /c/boost/boost_1_49_0/stage/lib/
 LDLIBS   := -lboost_thread -lboost_regex -lboost_filesystem \
@@ -20,9 +20,9 @@ PREREQS  := $(SRCS:.cpp=.d)
 
 all: $(OBJS) $(PROG)
 
-ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # any real goals?
-    # don't emit a warning if files are missing; their existence is ensured upon building
-    -include $(PREREQS) # building respective object file (thus the leading "-")
+ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
+   # Don't emit a warning if files are missing (leading "-"); their existence is ensured
+   -include $(PREREQS) # when building the respective object files.
 endif
 
 $(PROG): $(OBJS)
@@ -46,4 +46,4 @@ $(PREREQS):
 $(OBJS): $$(subst .o,.d,$$@)
 	$(CXX) $(CXXFLAGS) $(patsubst %.o,%.cpp,$@) -o $@
 
-# vim: tw=90 ts=8 sw=0 noet
+# vim: tw=90 ts=8 sw=3 noet
