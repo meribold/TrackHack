@@ -98,8 +98,6 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    editMenu->Append(myID_REMOVE_LINK, "&Remove link\tCtrl+R");
    editMenu->Enable(myID_REMOVE_LINK, false);
 
-   viewMenu->AppendCheckItem(wxID_ANY, "&Status bar");
-
    toolsMenu->Append(wxID_ANY, "View s&ystem-wide configuration file");
    toolsMenu->Append(wxID_ANY, "View &user-specific configuration file");
    toolsMenu->AppendSeparator();
