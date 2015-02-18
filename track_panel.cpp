@@ -210,8 +210,8 @@ void TrackPanel::onPaint(wxPaintEvent&)
                wxCoord deviceX = bitmapToDeviceX((*track)[focusedIndex].x);
                wxCoord deviceY = bitmapToDeviceY((*track)[focusedIndex].y);
 
-               gC->DrawEllipse(bitmapToDeviceX((*track)[focusedIndex].x) - 4.,
-                               bitmapToDeviceY((*track)[focusedIndex].y) - 4., 8., 8.);
+               gC->DrawEllipse(bitmapToDeviceX((*track)[focusedIndex].x) - 3.,
+                               bitmapToDeviceY((*track)[focusedIndex].y) - 3., 6., 6.);
 
                {
                   const std::string& label = std::get<0>(i);
