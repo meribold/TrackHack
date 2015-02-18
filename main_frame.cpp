@@ -120,6 +120,7 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    SetMenuBar(menuBar);
    ///
    //// </_menu_bar_construction_> ////
+
    CreateStatusBar(1, wxSTB_SIZEGRIP | wxSTB_SHOW_TIPS | wxSTB_ELLIPSIZE_START |
       wxFULL_REPAINT_ON_RESIZE);
 
