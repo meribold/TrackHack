@@ -1,18 +1,20 @@
-SHELL := /bin/sh
-CXX := g++
+SHELL    := /bin/sh
+CXX      := g++
 WXCONFIG := wx-config
-IDIRS := /c/boost/boost_1_49_0
-CXXFLAGS := -std=gnu++11 -Wall -Wextra -Wno-old-style-cast -pedantic -g -c \
-	$$($(WXCONFIG) --cxxflags) $(addprefix -I, $(IDIRS))
-CPPFLAGS := -std=gnu++0x $$($(WXCONFIG) --cppflags)
-LDIRS := /c/boost/boost_1_49_0/stage/lib/
-LDLIBS := -lboost_thread -lboost_regex -lboost_filesystem \
-	-lboost_system $$($(WXCONFIG) --libs)
-LDFLAGS := -std=c++11 -Wall -Wextra -Wno-old-style-cast -pedantic $(addprefix -L, $(LDIRS))
-PROG := track_hack.exe
-SRCS := app.cpp bitmap.cpp frame.cpp main_frame.cpp movie.cpp open_movie_wizard.cpp track_panel.cpp trackee.cpp tracker.cpp trackee_box.cpp one_through_three.cpp
-OBJS := $(SRCS:.cpp=.o)
-PREREQS := $(SRCS:.cpp=.d)
+IDIRS    := /c/boost/boost_1_49_0
+CXXFLAGS := -std=c++14 -Wall -Wextra -Wno-old-style-cast -pedantic -g -c \
+	    $$($(WXCONFIG) --cxxflags) $(addprefix -I, $(IDIRS))
+CPPFLAGS := -std=c++14 $$($(WXCONFIG) --cppflags)
+LDIRS    := /c/boost/boost_1_49_0/stage/lib/
+LDLIBS   := -lboost_thread -lboost_regex -lboost_filesystem \
+            -lboost_system $$($(WXCONFIG) --libs)
+LDFLAGS  := -std=c++14 -Wall -Wextra -Wno-old-style-cast -pedantic \
+            $(addprefix -L, $(LDIRS))
+PROG     := track_hack.exe
+SRCS     := app.cpp bitmap.cpp frame.cpp main_frame.cpp movie.cpp open_movie_wizard.cpp \
+            track_panel.cpp trackee.cpp tracker.cpp trackee_box.cpp one_through_three.cpp
+OBJS     := $(SRCS:.cpp=.o)
+PREREQS  := $(SRCS:.cpp=.d)
 
 .PHONY: all clean
 
@@ -43,3 +45,5 @@ $(PREREQS):
 
 $(OBJS): $$(subst .o,.d,$$@)
 	$(CXX) $(CXXFLAGS) $(patsubst %.o,%.cpp,$@) -o $@
+
+# vim: tw=90 ts=8 sw=0 noet
