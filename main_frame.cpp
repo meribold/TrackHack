@@ -38,7 +38,7 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    menuBar{new wxMenuBar{}},
    fileMenu{new wxMenu{}},
    editMenu{new wxMenu{}},
-   viewMenu{new wxMenu{}},
+   //viewMenu{new wxMenu{}},
    toolsMenu{new wxMenu{}},
    plugInMenu{new wxMenu{}},
    helpMenu{new wxMenu{}},
@@ -110,7 +110,7 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
 
    menuBar->Append(fileMenu, "&File");
    menuBar->Append(editMenu, "&Edit");
-   menuBar->Append(viewMenu, "&View");
+   //menuBar->Append(viewMenu, "&View");
    menuBar->Append(toolsMenu, "&Tools");
    menuBar->Append(plugInMenu, "&Plug-ins");
    menuBar->Append(helpMenu, "&Help");
