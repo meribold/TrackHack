@@ -25,7 +25,7 @@ TrackeeBox::TrackeeBox(wxWindow* parent, wxWindowID id, const wxPoint& pos,
    vBox{new wxBoxSizer{wxVERTICAL}},
    textCtrl{new wxTextCtrl{this, id, "my_trackee", wxDefaultPosition, wxDefaultSize,
       wxTE_PROCESS_ENTER, FilenameValidator{}}},
-   listBox{new wxListBox{this, id, wxDefaultPosition, wxDefaultSize}}
+   listBox{new wxListBox{this, id}}
 {
    wxASSERT_MSG(typeid(*textCtrl->GetValidator()) == typeid(FilenameValidator),
       u8"CURSE IT!");
