@@ -96,26 +96,26 @@ inline void Tracker::track(Trackee& trackee, const Movie& movie)
 inline Point Tracker::trackDown(Trackee& trackee, std::shared_ptr<const Bitmap> bitmap,
    const Point& adjacentPoint)
 {
-   std::size_t firstRow    = unsigned{adjacentPoint.y} < trackee.speedCap ?
-                                0 : adjacentPoint.y - trackee.speedCap;
-   std::size_t lastRow     = adjacentPoint.y + trackee.speedCap < bitmap->height ?
-                                adjacentPoint.y + trackee.speedCap : bitmap->height - 1;
-   std::size_t firstColumn = unsigned{adjacentPoint.x} < trackee.speedCap ?
-                                0 : adjacentPoint.x - trackee.speedCap;
-   std::size_t lastColumn  = adjacentPoint.x + trackee.speedCap < bitmap->width ?
-                                adjacentPoint.x + trackee.speedCap : bitmap->width - 1;
+   int firstRow    = unsigned(adjacentPoint.y) < trackee.speedCap ?
+                        0 : adjacentPoint.y - trackee.speedCap;
+   int lastRow     = adjacentPoint.y + trackee.speedCap < bitmap->height ?
+                        adjacentPoint.y + trackee.speedCap : bitmap->height - 1;
+   int firstColumn = unsigned(adjacentPoint.x) < trackee.speedCap ?
+                        0 : adjacentPoint.x - trackee.speedCap;
+   int lastColumn  = adjacentPoint.x + trackee.speedCap < bitmap->width ?
+                        adjacentPoint.x + trackee.speedCap : bitmap->width - 1;
 
    Point peakPoint = adjacentPoint;
    unsigned char intensityPeak = (*bitmap)[peakPoint.y][peakPoint.x];
 
    std::size_t squaredDisplacement, squaredSpeedCap = std::pow(trackee.speedCap, 2);
 
-   for (std::size_t row = firstRow; row <= lastRow; ++row)
+   for (int row = firstRow; row <= lastRow; ++row)
    {
-      for (std::size_t column = firstColumn; column <= lastColumn; ++column)
+      for (int column = firstColumn; column <= lastColumn; ++column)
       {
-         squaredDisplacement = std::pow(adjacentPoint.x - int{column}, 2) +
-                               std::pow(adjacentPoint.y - int{row}, 2);
+         squaredDisplacement = std::pow(adjacentPoint.x - column, 2) +
+                               std::pow(adjacentPoint.y - row, 2);
          if (squaredDisplacement <= squaredSpeedCap)
          {
             if ((*bitmap)[row][column] > intensityPeak)
@@ -138,26 +138,26 @@ inline Point Tracker::trackDown(Trackee& trackee, std::shared_ptr<const Bitmap> 
 inline Point Tracker::trackDown(Trackee& trackee, std::shared_ptr<const Bitmap> bitmap,
    const Point& adjacentPoint, const Point& auxiliaryPoint, unsigned proximity)
 {
-   std::size_t firstRow    = unsigned{adjacentPoint.y} < trackee.speedCap ?
-                                0 : adjacentPoint.y - trackee.speedCap;
-   std::size_t lastRow     = adjacentPoint.y + trackee.speedCap < bitmap->height ?
-                                adjacentPoint.y + trackee.speedCap : bitmap->height - 1;
-   std::size_t firstColumn = unsigned{adjacentPoint.x} < trackee.speedCap ?
-                                0 : adjacentPoint.x - trackee.speedCap;
-   std::size_t lastColumn  = adjacentPoint.x + trackee.speedCap < bitmap->width ?
-                                adjacentPoint.x + trackee.speedCap : bitmap->width - 1;
+   int firstRow    = unsigned(adjacentPoint.y) < trackee.speedCap ?
+                        0 : adjacentPoint.y - trackee.speedCap;
+   int lastRow     = adjacentPoint.y + trackee.speedCap < bitmap->height ?
+                        adjacentPoint.y + trackee.speedCap : bitmap->height - 1;
+   int firstColumn = unsigned(adjacentPoint.x) < trackee.speedCap ?
+                        0 : adjacentPoint.x - trackee.speedCap;
+   int lastColumn  = adjacentPoint.x + trackee.speedCap < bitmap->width ?
+                        adjacentPoint.x + trackee.speedCap : bitmap->width - 1;
 
    Point preliminaryPoint = adjacentPoint;
    int jolliestNiceness = -255; // That's not very nice at all.
 
    std::size_t squaredDisplacement, squaredSpeedCap = std::pow(trackee.speedCap, 2);
 
-   for (std::size_t row = firstRow; row <= lastRow; ++row)
+   for (int row = firstRow; row <= lastRow; ++row)
    {
-      for (std::size_t column = firstColumn; column <= lastColumn; ++column)
+      for (int column = firstColumn; column <= lastColumn; ++column)
       {
-         squaredDisplacement = std::pow(adjacentPoint.x - int{column}, 2) +
-                               std::pow(adjacentPoint.y - int{row}, 2);
+         squaredDisplacement = std::pow(adjacentPoint.x - column, 2) +
+                               std::pow(adjacentPoint.y - row, 2);
          if (squaredDisplacement <= squaredSpeedCap)
          {
             int contendersNiceness = niceness(Point{column, row}, (*bitmap)[row][column],
