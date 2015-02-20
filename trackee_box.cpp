@@ -23,7 +23,7 @@ TrackeeBox::TrackeeBox(wxWindow* parent, wxWindowID id, const wxPoint& pos,
    const wxSize& size) :
    wxPanel{parent, id, pos, size},
    vBox{new wxBoxSizer{wxVERTICAL}},
-   textCtrl{new wxTextCtrl{this, id, "my_trackee", wxDefaultPosition, wxDefaultSize,
+   textCtrl{new wxTextCtrl{this, id, "1", wxDefaultPosition, wxDefaultSize,
       wxTE_PROCESS_ENTER, FilenameValidator{}}},
    listBox{new wxListBox{this, id}}
 {
@@ -55,7 +55,7 @@ void TrackeeBox::deleteSelection()
 void TrackeeBox::reset()
 {
    listBox->Clear();
-   textCtrl->SetValue("my_trackee");
+   textCtrl->SetValue("1");
    textCtrl->SelectAll();
 }
 
