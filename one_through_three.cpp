@@ -236,8 +236,8 @@ void OneThroughThreeDialog::onImagePanelPaint(wxPaintEvent&)
 
    if (gC)
    {
-      gC->DrawBitmap(subBitmap, 0., 0., wxDouble{imagePanel->GetClientSize().GetWidth()},
-         wxDouble{imagePanel->GetClientSize().GetHeight()});
+      gC->DrawBitmap(subBitmap, 0., 0., wxDouble(imagePanel->GetClientSize().GetWidth()),
+         wxDouble(imagePanel->GetClientSize().GetHeight()));
 
       gC->SetPen(wxPen{wxColour{0x00, 0x00, 0x00}});
       gC->SetBrush(wxBrush{wxColour{0xff, 0xa7, 0x1a, 0x80}}); // Day[9] made me do it.

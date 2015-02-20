@@ -150,8 +150,9 @@ void TrackPanel::onPaint(wxPaintEvent&)
 
    if (gC)
    {
-      gC->DrawBitmap(bitmap, 0., 0., wxDouble{GetClientSize().GetWidth()},
-                     wxDouble{GetClientSize().GetHeight()});
+      // casting to wxDouble; hence parens and not curly braces are used
+      gC->DrawBitmap(bitmap, 0., 0., wxDouble(GetClientSize().GetWidth()),
+                     wxDouble(GetClientSize().GetHeight()));
 
       if (rect.GetPosition().IsFullySpecified() && rect.GetSize().IsFullySpecified())
       {
@@ -321,11 +322,10 @@ void TrackPanel::onLeftUp(wxMouseEvent&)
    wxNativePixelData pixelData{bitmap};
    wxNativePixelData::Iterator iterator{pixelData};
 
-   for (std::size_t row = rect.GetTop(); row < std::size_t{rect.y + rect.height}; ++row)
+   for (int row = rect.GetTop(); row < rect.y + rect.height; ++row)
    {
       iterator.MoveTo(pixelData, rect.GetLeft(), row);
-      for (std::size_t column = rect.GetLeft(); column < std::size_t{rect.x + rect.width};
-           ++column)
+      for (int column = rect.GetLeft(); column < rect.x + rect.width; ++column)
       {
          if (intensity < iterator.Red()) {
             intensity = iterator.Red();
@@ -363,26 +363,27 @@ void TrackPanel::onLeftUp(wxMouseEvent&)
 ///
 wxCoord TrackPanel::bitmapToDeviceX(wxCoord bitmapX) const
 {
-   return std::round(double{bitmapX * GetClientSize().GetWidth()} /
-                     double{bitmap.GetWidth()});
+   // casting to double; curly braces would cause an implicit, narrowing conversion (bad)
+   return std::round(double(bitmapX * GetClientSize().GetWidth()) /
+                     double(bitmap.GetWidth()));
 }
 
 wxCoord TrackPanel::bitmapToDeviceY(wxCoord bitmapY) const
 {
-   return std::round(double{bitmapY * GetClientSize().GetHeight()} /
-                     double{bitmap.GetHeight()});
+   return std::round(double(bitmapY * GetClientSize().GetHeight()) /
+                     double(bitmap.GetHeight()));
 }
 
 wxCoord TrackPanel::deviceToBitmapX(wxCoord deviceX) const
 {
-   return std::round(double{deviceX * bitmap.GetWidth()} /
-                     double{GetClientSize().GetWidth()});
+   return std::round(double(deviceX * bitmap.GetWidth()) /
+                     double(GetClientSize().GetWidth()));
 }
 
 wxCoord TrackPanel::deviceToBitmapY(wxCoord deviceY) const
 {
-   return std::round(double{deviceY * bitmap.GetHeight()} /
-                     double{GetClientSize().GetHeight()});
+   return std::round(double(deviceY * bitmap.GetHeight()) /
+                     double(GetClientSize().GetHeight()));
 }
 ///
 //// </_coordinate_conversion_functions_> ////
