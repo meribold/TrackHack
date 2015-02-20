@@ -298,8 +298,8 @@ void TrackPanel::onLeftUp(wxMouseEvent&)
    assert (rect.GetPosition().IsFullySpecified() && rect.GetSize().IsFullySpecified());
    assert (!rect.IsEmpty());
 
-   bool didUnbind =
-      Unbind(wxEVT_MOTION, &TrackPanel::onMotion, this) && Unbind(wxEVT_LEFT_UP, &TrackPanel::onLeftUp, this);
+   bool didUnbind = Unbind(wxEVT_MOTION, &TrackPanel::onMotion, this) &&
+                    Unbind(wxEVT_LEFT_UP, &TrackPanel::onLeftUp, this);
    assert (didUnbind);
 
    leftDownPoint = wxDefaultPosition;

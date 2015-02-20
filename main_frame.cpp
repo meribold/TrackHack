@@ -269,6 +269,9 @@ void MainFrame::onMarkBoxSelected(wxCommandEvent& event)
                                                                    // event.
    trackPanel->setBitmap(getBitmap(movieSlider->GetValue()));
    trackPanel->focusIndex(movieSlider->GetValue());
+
+   GetMenuBar()->Enable(myID_REMOVE_LINK, true);
+
    trackPanel->Refresh(false);
 
    // No event.Skip() necessary.
@@ -443,7 +446,7 @@ void MainFrame::onDeleteTrackee(wxCommandEvent&)
    std::size_t erasedElements = trackees.erase(key);
    assert(erasedElements == 1);
 
-   erasedElements = marks.erase(key);
+   marks.erase(key);
 
    trackeeBox->deleteSelection();
    trackPanel->eraseTrack(key);
@@ -458,9 +461,41 @@ void MainFrame::onDeleteTrackee(wxCommandEvent&)
    trackPanel->Refresh(false);
 }
 
+// Somewhat similar to code in MainFrame::onTrackPanelMarked().
 void MainFrame::onRemoveLink(wxCommandEvent&)
 {
-   // TODO.
+   auto linkKey = markBox->GetStringSelection().ToStdString();
+
+   if (!linkKey.empty())
+   {
+      auto trackeeKey = trackeeBox->getStringSelection().ToStdString();
+      assert (!trackeeKey.empty());
+
+      std::vector<std::size_t>& links = this->marks[trackeeKey];
+      auto frameIndex = std::stoi(linkKey);
+
+      auto iterator = std::find(links.begin(), links.end(), frameIndex);
+      assert (iterator != links.end());
+
+      std::size_t first = (iterator == links.begin()) ? 0 : *(iterator - 1) + 1;
+      std::size_t last = (iterator + 1 == links.end()) ?
+                         movie->getSize() : *(iterator + 1);
+      for (auto i = first; i < last; ++i)
+      {
+         trackees[trackeeKey].setPoint(i, Point{-1, -1});
+      }
+
+      links.erase(iterator);
+
+      markBox->Delete(markBox->GetSelection());
+      if (markBox->IsEmpty()) {
+         markBox->Hide();
+         topPanel->Layout();
+      }
+      GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+
+      trackPanel->Refresh(false);
+   }
 }
 
 void MainFrame::onAbout(wxCommandEvent&)
