@@ -339,21 +339,21 @@ void MainFrame::onTrackPanelMarked(TrackPanelEvent& event)
    // Don't Skip() the event.
 }
 
-void MainFrame::onScrollChanged(wxScrollEvent& event)
+void MainFrame::onScrollChanged(wxScrollEvent& /*event*/)
 {
    // topPanel->Layout() would be necessary but all bitmaps in a movie are required to be
    // of equal size.
-   trackPanel->setBitmap(getBitmap(event.GetPosition()));
+   //trackPanel->setBitmap(getBitmap(event.GetPosition()));
 }
 
-void MainFrame::onScrollThumbtrack(wxScrollEvent& event)
+void MainFrame::onScrollThumbtrack(wxScrollEvent& /*event*/)
 {
-   trackPanel->setBitmap(getBitmap(event.GetPosition()));
+   //trackPanel->setBitmap(getBitmap(event.GetPosition()));
 }
 
 void MainFrame::onSlider(wxCommandEvent&)
 {
-   //trackPanel->setBitmap(getBitmap(movieSlider->GetValue()));
+   trackPanel->setBitmap(getBitmap(movieSlider->GetValue()));
    {
       // ...
       std::vector<std::size_t>& marks =
