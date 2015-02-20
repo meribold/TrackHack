@@ -40,6 +40,7 @@ TrackeeBox::TrackeeBox(wxWindow* parent, wxWindowID id, const wxPoint& pos,
    ///
    Bind(wxEVT_COMMAND_TEXT_ENTER, &TrackeeBox::onEnter, this, id);
    Bind(wxEVT_KEY_UP, &TrackeeBox::onKeyUp, this);
+   listBox->Bind(wxEVT_CONTEXT_MENU, &TrackeeBox::onContextMenu, this);
    ///
    //// </_event_handler_mappings_> ////
 }
@@ -110,11 +111,16 @@ void TrackeeBox::onKeyUp(wxKeyEvent&)
 {
    assert(false);
 }
+
+void TrackeeBox::onContextMenu(wxContextMenuEvent&)
+{
+   // ...
+}
 ///
 //// </_event_handler_definitions> ////
 
-FilenameValidator::FilenameValidator(wxOperatingSystemId operatingSystemId, wxString* value) :
-   wxTextValidator{wxFILTER_EMPTY | wxFILTER_EXCLUDE_CHAR_LIST, value}
+FilenameValidator::FilenameValidator(wxOperatingSystemId operatingSystemId,
+   wxString* value) : wxTextValidator{wxFILTER_EMPTY | wxFILTER_EXCLUDE_CHAR_LIST, value}
 {
    // The chars not accepted in filenames on the operating system (only Windows 7 is
    // supported at this point), which would thus render a string ineligible for being used
