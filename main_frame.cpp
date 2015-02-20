@@ -84,7 +84,6 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    // See the documentation of wxMenuItem::SetItemLabel() to find how the mnemonics and
    // accelerator strings in the following menu items magically work all by themselves.
    fileMenu->Append(wxID_OPEN, "&Open\tCtrl+O");
-   fileMenu->Append(wxID_SAVE);
    fileMenu->AppendSeparator();
    fileMenu->Append(myID_TRACK, "&Track\tCtrl+T");
    fileMenu->AppendSeparator();
@@ -141,7 +140,6 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::onSlider, this, wxID_ANY);
 
    Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onOpen, this, wxID_OPEN);
-   Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onSave, this, wxID_SAVE);
    Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onTrack, this, myID_TRACK);
    Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onDeleteTrackee, this,
       myID_DELETE_TRACKEE);
@@ -420,26 +418,6 @@ void MainFrame::onOpen(wxCommandEvent&)
    }
 }
 
-void MainFrame::onSave(wxCommandEvent&)
-{
-   for (const auto& pair : trackees)
-   {
-      const std::string key = std::get<0>(pair);
-      const Trackee trackee = std::get<1>(pair);
-
-      std::shared_ptr<const Track> track = trackee.getTrack().lock();
-
-      std::ofstream oStream{movie->getDir() + key + "_track.txt"};
-
-      for (std::size_t i = 0; i < movie->getSize(); ++i)
-      {
-         oStream << movie->getFrame(i).getFilename() << '\t' << (*track)[i].x << '\t' <<
-            (*track)[i].y << std::endl;
-      }
-      oStream.close();
-   }
-}
-
 void MainFrame::onTrack(wxCommandEvent&)
 {
    if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR) {
@@ -515,6 +493,23 @@ void MainFrame::onOneThroughThree(wxCommandEvent&)
 
 void MainFrame::onTrackingCompleted(wxThreadEvent&)
 {
+   for (const auto& pair : trackees)
+   {
+      const std::string key = std::get<0>(pair);
+      const Trackee trackee = std::get<1>(pair);
+
+      std::shared_ptr<const Track> track = trackee.getTrack().lock();
+
+      std::ofstream oStream{movie->getDir() + key + "_track.txt"};
+
+      for (std::size_t i = 0; i < movie->getSize(); ++i)
+      {
+         oStream << movie->getFrame(i).getFilename() << '\t' << (*track)[i].x << '\t' <<
+            (*track)[i].y << std::endl;
+      }
+      oStream.close();
+   }
+
    trackeeBox->Enable();
    trackPanel->Enable();
 
