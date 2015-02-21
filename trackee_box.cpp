@@ -51,7 +51,10 @@ TrackeeBox::TrackeeBox(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 
 void TrackeeBox::deleteSelection()
 {
-   if (listBox->GetSelection() != wxNOT_FOUND) listBox->Delete(listBox->GetSelection());
+   if (listBox->GetSelection() != wxNOT_FOUND) {
+      listBox->Delete(listBox->GetSelection());
+      listBox->SetSelection(wxNOT_FOUND);
+   }
 }
 
 void TrackeeBox::reset()
@@ -127,6 +130,9 @@ void TrackeeBox::onContextMenu(wxContextMenuEvent&)
             event->SetEventObject(this);
             event->SetString(listBox->GetString(selection));
             listBox->Delete(selection);
+            // Fixes a bug where selecting the item that moved to the index of the deleted
+            // item doesn't cause a wxEVT_COMMAND_LISTBOX_SELECTED.
+            listBox->SetSelection(wxNOT_FOUND);
             ::wxQueueEvent(GetEventHandler(), event);
          }, wxID_DELETE);
       PopupMenu(&menu);
