@@ -129,6 +129,8 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    Bind(wxEVT_COMMAND_TEXT_ENTER, &MainFrame::onTrackeeBoxEnter, this, myID_TRACKEEBOX);
    Bind(wxEVT_COMMAND_LISTBOX_SELECTED, &MainFrame::onTrackeeBoxSelected, this,
       myID_TRACKEEBOX);
+   Bind(myEVT_COMMAND_TRACKEEBOX_DELETED, &MainFrame::onTrackeeBoxDeleted, this,
+      myID_TRACKEEBOX);
 
    Bind(wxEVT_COMMAND_LISTBOX_SELECTED, &MainFrame::onMarkBoxSelected, this,
       myID_LINKBOX);
@@ -260,6 +262,25 @@ void MainFrame::onTrackeeBoxSelected(wxCommandEvent& event)
    trackPanel->Refresh(false);
 
    // No event.Skip() necessary.
+}
+
+void MainFrame::onTrackeeBoxDeleted(wxCommandEvent& event)
+{
+   std::string key = event.GetString().ToStdString();
+
+   trackees.erase(key);
+   marks.erase(key);
+
+   trackPanel->eraseTrack(key);
+
+   if (trackeeBox->getStringSelection().empty()) {
+      GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
+      GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+      markBox->Clear();
+      markBox->Hide();
+   }
+   topPanel->Layout();
+   trackPanel->Refresh(false);
 }
 
 void MainFrame::onMarkBoxSelected(wxCommandEvent& event)

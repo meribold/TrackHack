@@ -1,4 +1,5 @@
 #include <wx/debug.h>   // wxASSERT
+#include <wx/menu.h>
 #include <wx/sizer.h>
 #include <wx/utils.h>   // wxOperatingSystemId wxGetOsVersion()
 #include <wx/valtext.h> // wxTextValidator
@@ -114,7 +115,22 @@ void TrackeeBox::onKeyUp(wxKeyEvent&)
 
 void TrackeeBox::onContextMenu(wxContextMenuEvent&)
 {
-   // ...
+   auto mousePos = listBox->ScreenToClient(::wxGetMousePosition());
+   auto selection = listBox->HitTest(mousePos);
+
+   if (selection != wxNOT_FOUND) {
+      wxMenu menu;
+      menu.Append(wxID_DELETE);
+      menu.Bind(wxEVT_COMMAND_MENU_SELECTED, [this, selection](wxCommandEvent&) {
+            wxCommandEvent* event =
+               new wxCommandEvent{myEVT_COMMAND_TRACKEEBOX_DELETED, GetId()};
+            event->SetEventObject(this);
+            event->SetString(listBox->GetString(selection));
+            listBox->Delete(selection);
+            ::wxQueueEvent(GetEventHandler(), event);
+         }, wxID_DELETE);
+      PopupMenu(&menu);
+   }
 }
 ///
 //// </_event_handler_definitions> ////
@@ -147,6 +163,6 @@ wxObject* FilenameValidator::Clone() const
    return new FilenameValidator{*this};
 }
 
-wxDEFINE_EVENT(EVT_COMMAND_TRACKEEBOX_DELETED, wxCommandEvent);
+wxDEFINE_EVENT(myEVT_COMMAND_TRACKEEBOX_DELETED, wxCommandEvent);
 
 // vim: tw=90 sw=3 et
