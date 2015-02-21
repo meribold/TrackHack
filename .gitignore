@@ -9,4 +9,5 @@ lib*.a
 *.d
 
 # Executables.
+track_hack
 *.exe
