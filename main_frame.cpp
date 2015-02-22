@@ -357,6 +357,8 @@ void MainFrame::onTrackPanelMarked(TrackPanelEvent& event)
             topPanel->Layout();
          }
       }
+      // TODO: is this unneeded on Windows? Why?
+      trackPanel->Refresh(false);
    }
    // Don't Skip() the event.
 }
