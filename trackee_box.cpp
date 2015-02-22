@@ -1,3 +1,8 @@
+#include <algorithm>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 #include <wx/debug.h>   // wxASSERT
 #include <wx/menu.h>
 #include <wx/sizer.h>
@@ -28,17 +33,19 @@ TrackeeBox::TrackeeBox(wxWindow* parent, wxWindowID id, const wxPoint& pos,
       wxTE_PROCESS_ENTER, FilenameValidator{}}},
    listBox{new wxListBox{this, id}}
 {
-   wxASSERT_MSG(typeid(*textCtrl->GetValidator()) == typeid(FilenameValidator),
-      u8"CURSE IT!");
-
    vBox->Add(textCtrl, 0, wxEXPAND, 0);
    vBox->Add(listBox, 1, wxEXPAND | wxTOP, 1);
 
    SetSizer(vBox);
    InitDialog();
 
+   //listBox->SetCanFocus(false);
+
    //// <_event_handler_mappings_> ////
    ///
+   textCtrl->Bind(wxEVT_SET_FOCUS, &TrackeeBox::onFocus, this, id);
+   listBox->Bind(wxEVT_SET_FOCUS, &TrackeeBox::onFocus, this, id);
+   textCtrl->Bind(wxEVT_KILL_FOCUS, &TrackeeBox::onFocus, this, id);
    Bind(wxEVT_COMMAND_TEXT_ENTER, &TrackeeBox::onEnter, this, id);
    Bind(wxEVT_KEY_UP, &TrackeeBox::onKeyUp, this);
    listBox->Bind(wxEVT_CONTEXT_MENU, &TrackeeBox::onContextMenu, this);
@@ -49,30 +56,10 @@ TrackeeBox::TrackeeBox(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 //// <_event_handler_definitions> ////
 ///
 
-void TrackeeBox::deleteSelection()
-{
-   if (listBox->GetSelection() != wxNOT_FOUND) {
-      listBox->Delete(listBox->GetSelection());
-      listBox->SetSelection(wxNOT_FOUND);
-   }
-}
-
-void TrackeeBox::reset()
-{
-   listBox->Clear();
-   textCtrl->SetValue("1");
-   textCtrl->SelectAll();
-}
-
-wxString TrackeeBox::getStringSelection() const
-{
-   return listBox->GetStringSelection();
-}
-
 // The wxTextValidator used is not enough; we have to ensure that the string in *textCtrl
 // does not collide with any strings in *listBox. On Windows 7, filenames differing only
 // in case do collide but NTFS is case-sensitive (unlike VFAT or FAT32).
-void TrackeeBox::onEnter(wxCommandEvent& event)
+std::string TrackeeBox::addTrackee()
 {
    if (Validate() && TransferDataFromWindow())
    {
@@ -80,11 +67,12 @@ void TrackeeBox::onEnter(wxCommandEvent& event)
       auto position = listBox->FindString(textCtrl->GetValue());
       if (position == wxNOT_FOUND)
       {
-         listBox->Insert(textCtrl->GetValue(), 0);
-         listBox->SetSelection(0); // Select the newly inserted string; does not cause an
-                                   // event to be emitted.
-         textCtrl->Clear();
-         event.Skip(); // Someone might want to construct a Trackee now.
+         auto trackeeId = textCtrl->GetValue().ToStdString();
+         listBox->Insert(trackeeId, 0);
+
+         suggestId();
+
+         return trackeeId;
       }
       else // ...
       {
@@ -92,9 +80,8 @@ void TrackeeBox::onEnter(wxCommandEvent& event)
          textCtrl->SelectAll(); // ...
 
          // Generage a selection event manually:
-
-         event.SetEventType(wxEVT_COMMAND_LISTBOX_SELECTED);
-         event.SetEventObject(this->listBox);
+         wxCommandEvent event{wxEVT_COMMAND_LISTBOX_SELECTED, listBox->GetId()};
+         event.SetEventObject(listBox);
          event.SetInt(position);
          // Make sure that if event.GetString() is used at any later point during the
          // processing of this event, it will match the existing string even if a case
@@ -103,12 +90,80 @@ void TrackeeBox::onEnter(wxCommandEvent& event)
          event.SetString(listBox->GetString(position));
 
          // The event will be processed immediately, i.e. when this function returns the
-         // event was processed.
+         // event was processed. Also, this method doesn't transfer ownership of the event
+         // (unlike wxEventHandler::QueueEvent()).
          GetEventHandler()->ProcessEvent(event);
-
-         // Don't skip the event!
       }
    }
+   return std::string{};
+}
+
+void TrackeeBox::deleteTrackee(unsigned n)
+{
+   listBox->Delete(n);
+}
+
+void TrackeeBox::deleteSelection()
+{
+   auto selection = listBox->GetSelection();
+   if (selection != wxNOT_FOUND) {
+      deleteTrackee(selection);
+      if (!listBox->IsEmpty()) {
+         if (static_cast<unsigned>(selection) < listBox->GetCount()) {
+            listBox->SetSelection(selection);
+         }
+         else {
+            listBox->SetSelection(selection - 1);
+         }
+      }
+   }
+}
+
+void TrackeeBox::reset()
+{
+   listBox->Clear();
+   suggestId();
+}
+
+wxString TrackeeBox::getStringSelection() const
+{
+   return listBox->GetStringSelection();
+}
+
+void TrackeeBox::onFocus(wxFocusEvent& event)
+{
+   if (event.GetEventType() == wxEVT_SET_FOCUS) {
+      if (event.GetEventObject() == textCtrl) {
+         //listBox->SetSelection(wxNOT_FOUND);
+      }
+      else if (event.GetEventObject() == listBox) {
+         //textCtrl->SetFocus();
+         return;
+      }
+   }
+   else if (event.GetEventType() == wxEVT_KILL_FOCUS) {
+
+   }
+   // "The focus event handlers should almost invariably call wxEvent::Skip() on their
+   // event argument to allow the default handling to take place."
+   event.Skip();
+}
+
+void TrackeeBox::onEnter(wxCommandEvent& event)
+{
+   if (!addTrackee().empty())
+   {
+      // Select the newly inserted string; does not cause an event to be emitted.
+      listBox->SetSelection(0);
+
+      wxCommandEvent newEvent{myEVT_COMMAND_TRACKEEBOX_ADDED, GetId()};
+      newEvent.SetEventObject(this);
+      newEvent.SetInt(0);
+      newEvent.SetString(listBox->GetString(0));
+      GetEventHandler()->ProcessEvent(newEvent); // synchronous
+
+   }
+   event.Skip();
 }
 
 void TrackeeBox::onKeyUp(wxKeyEvent&)
@@ -119,20 +174,17 @@ void TrackeeBox::onKeyUp(wxKeyEvent&)
 void TrackeeBox::onContextMenu(wxContextMenuEvent&)
 {
    auto mousePos = listBox->ScreenToClient(::wxGetMousePosition());
-   auto selection = listBox->HitTest(mousePos);
+   auto index = listBox->HitTest(mousePos);
 
-   if (selection != wxNOT_FOUND) {
+   if (index != wxNOT_FOUND) {
       wxMenu menu;
       menu.Append(wxID_DELETE);
-      menu.Bind(wxEVT_COMMAND_MENU_SELECTED, [this, selection](wxCommandEvent&) {
+      menu.Bind(wxEVT_COMMAND_MENU_SELECTED, [this, index](wxCommandEvent&) {
             wxCommandEvent* event =
                new wxCommandEvent{myEVT_COMMAND_TRACKEEBOX_DELETED, GetId()};
             event->SetEventObject(this);
-            event->SetString(listBox->GetString(selection));
-            listBox->Delete(selection);
-            // Fixes a bug where selecting the item that moved to the index of the deleted
-            // item doesn't cause a wxEVT_COMMAND_LISTBOX_SELECTED.
-            listBox->SetSelection(wxNOT_FOUND);
+            event->SetString(listBox->GetString(index));
+            deleteTrackee(index);
             ::wxQueueEvent(GetEventHandler(), event);
          }, wxID_DELETE);
       PopupMenu(&menu);
@@ -140,6 +192,41 @@ void TrackeeBox::onContextMenu(wxContextMenuEvent&)
 }
 ///
 //// </_event_handler_definitions> ////
+
+void TrackeeBox::suggestId()
+{
+   std::vector<unsigned> indices{};
+   indices.reserve(listBox->GetCount());
+   for (unsigned i = 0; i < listBox->GetCount(); ++i) {
+      try {
+         std::string trackeeKey = listBox->GetString(i).ToStdString();
+         int index = std::stoi(trackeeKey);
+         if (index > 0 && std::to_string(index) == trackeeKey) {
+            indices.push_back(unsigned(index));
+         }
+      }
+      catch (std::invalid_argument) {
+
+      }
+      catch (std::out_of_range) {
+
+      }
+   }
+   std::sort(indices.begin(), indices.end());
+   unsigned minFreeIndex = 1;
+   for (const auto& i : indices) {
+      if (minFreeIndex == i)
+         ++minFreeIndex;
+      else
+         break;
+   }
+
+   // Does not generate a wxEVT_TEXT event; otherwise identical to SetValue().
+   textCtrl->ChangeValue(std::to_string(minFreeIndex));
+   textCtrl->SelectAll();
+
+   //textCtrl->SetHint(std::to_string(minFreeIndex));
+}
 
 FilenameValidator::FilenameValidator(wxOperatingSystemId operatingSystemId,
    wxString* value) : wxTextValidator{wxFILTER_EMPTY | wxFILTER_EXCLUDE_CHAR_LIST, value}
@@ -169,6 +256,7 @@ wxObject* FilenameValidator::Clone() const
    return new FilenameValidator{*this};
 }
 
+wxDEFINE_EVENT(myEVT_COMMAND_TRACKEEBOX_ADDED, wxCommandEvent);
 wxDEFINE_EVENT(myEVT_COMMAND_TRACKEEBOX_DELETED, wxCommandEvent);
 
 // vim: tw=90 sw=3 et

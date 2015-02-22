@@ -7,21 +7,26 @@
 #include <wx/panel.h>
 #include <wx/textctrl.h>
 
-// posted when an item in the ListBox is deleted
+wxDECLARE_EVENT(myEVT_COMMAND_TRACKEEBOX_ADDED, wxCommandEvent);
+
+// Posted when an item in the ListBox is deleted
 wxDECLARE_EVENT(myEVT_COMMAND_TRACKEEBOX_DELETED, wxCommandEvent);
 
 // Events emitted by this class:
+//    custom wxCommandEvent with Id myEVT_COMMAND_TRACKEEBOX_ADDED
 //    custom wxCommandEvent with Id myEVT_COMMAND_TRACKEEBOX_DELETED
-//    wxCommandEvent with Id wxEVT_COMMAND_LISTBOX_SELECTED; event macro:
-// EVT_LISTBOX(id, func)
-//    wxCommand Event with Id wxEVT_COMMAND_TEXT_ENTER; event macro:
-// EVT_TEXT_ENTER(id, func)
+//    wxCommandEvent with Id wxEVT_COMMAND_LISTBOX_SELECTED
+//    wxCommand Event with Id wxEVT_COMMAND_TEXT_ENTER
 class TrackeeBox : public wxPanel
 {
    public:
 
    TrackeeBox(wxWindow* parent, wxWindowID = wxID_ANY, const wxPoint& = wxDefaultPosition,
       const wxSize& = wxDefaultSize);
+
+   std::string addTrackee();
+
+   void deleteTrackee(unsigned);
 
    void deleteSelection();
 
@@ -30,6 +35,9 @@ class TrackeeBox : public wxPanel
    wxString getStringSelection() const;
 
    private:
+
+   // Processes wxEVT_SET_FOCUS and wxEVT_KILL_FOCUS for textCtrl.
+   void onFocus(wxFocusEvent&);
 
    // Processes wxEVT_COMMAND_TEXT_ENTER, posted by *textCtrl. Propagated up to the parent
    // window after the call. If an item is added to *listBox it will also be selected, but
@@ -45,6 +53,8 @@ class TrackeeBox : public wxPanel
 
    // processes a wxEVT_CONTEXT_MENU
    void onContextMenu(wxContextMenuEvent&);
+
+   void suggestId();
 
    wxBoxSizer* vBox;
 

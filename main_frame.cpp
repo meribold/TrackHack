@@ -126,7 +126,8 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
 
    //// <_event_handler_mappings_> ////
    ///
-   Bind(wxEVT_COMMAND_TEXT_ENTER, &MainFrame::onTrackeeBoxEnter, this, myID_TRACKEEBOX);
+   Bind(myEVT_COMMAND_TRACKEEBOX_ADDED, &MainFrame::onTrackeeBoxAdded, this,
+      myID_TRACKEEBOX);
    Bind(wxEVT_COMMAND_LISTBOX_SELECTED, &MainFrame::onTrackeeBoxSelected, this,
       myID_TRACKEEBOX);
    Bind(myEVT_COMMAND_TRACKEEBOX_DELETED, &MainFrame::onTrackeeBoxDeleted, this,
@@ -178,43 +179,12 @@ wxThread::ExitCode MainFrame::Entry()
 
 //// <_event_handler_definitions> ////
 ///
-void MainFrame::onTrackeeBoxEnter(wxCommandEvent& event)
+void MainFrame::onTrackeeBoxAdded(wxCommandEvent& event)
 {
    std::string key = event.GetString().ToStdString();
-   auto pair = trackees.insert(std::make_pair(key, Trackee{9, movie->getSize()})); // ...
-   assert (std::get<1>(pair));
+   addTrackee(key);
 
-   trackPanel->addTrack(key, std::get<1>(*std::get<0>(pair)).getTrack());
-   trackPanel->useDrawingToolsOf(key);
-   trackPanel->Refresh(false);
-
-   if (markBox->IsShown())
-   {
-      assert (!markBox->IsEmpty());
-      markBox->Clear();
-      markBox->Hide();
-      topPanel->Layout();
-   }
-   // wxWindow::GetEffectiveMinSize() is, as per its documentation, "the value used by
-   // sizers to determine the appropriate amount of space to allocate for the widget" and
-   // "called by a wxSizer when it queries the size of a window or control"; as *listBox
-   // is added to its sizer with a proportion of 0, that should be the value the sizer
-   // ends up giving it (afaics); thus, this condition should determine if posting a size
-   // event to *listBox' parent would change anything.
-   else if (trackeeBox->GetEffectiveMinSize().GetHeight() !=
-            trackeeBox->GetSize().GetHeight())
-   {
-      // From the documentation of wxWindow::SendSizeEvent(): "It is sometimes useful to
-      // call this function after [...] a child size changes.  Note that if the frame is
-      // using [...] sizers [...], it is enough to call wxWindow::Layout() directly and
-      // this function should not be used [...]."
-      topPanel->Layout();
-   }
-
-   GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
-   GetMenuBar()->Enable(myID_REMOVE_LINK, false);
-
-   // Don't Skip() the event.
+   event.Skip();
 }
 
 namespace {
@@ -264,6 +234,7 @@ void MainFrame::onTrackeeBoxSelected(wxCommandEvent& event)
    // No event.Skip() necessary.
 }
 
+// TODO: move common code from this and onDeleteTrackee() to new function.
 void MainFrame::onTrackeeBoxDeleted(wxCommandEvent& event)
 {
    std::string key = event.GetString().ToStdString();
@@ -301,6 +272,14 @@ void MainFrame::onMarkBoxSelected(wxCommandEvent& event)
 void MainFrame::onTrackPanelMarked(TrackPanelEvent& event)
 {
    auto trackeeKey = trackeeBox->getStringSelection().ToStdString();
+
+   if (trackeeKey.empty())
+   {
+      trackeeKey = trackeeBox->addTrackee();
+      if (!trackeeKey.empty()) {
+         addTrackee(trackeeKey);
+      }
+   }
 
    if (!trackeeKey.empty())
    {
@@ -461,6 +440,7 @@ void MainFrame::onTrack(wxCommandEvent&)
    GetMenuBar()->Enable(myID_REMOVE_LINK, false);
 }
 
+// TODO: move common code from this and onTrackeeBoxDeleted() to new function.
 void MainFrame::onDeleteTrackee(wxCommandEvent&)
 {
    std::string key = trackeeBox->getStringSelection().ToStdString();
@@ -474,13 +454,13 @@ void MainFrame::onDeleteTrackee(wxCommandEvent&)
    trackeeBox->deleteSelection();
    trackPanel->eraseTrack(key);
 
-   // Since no trackee will be selected now ...
-   GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
-   GetMenuBar()->Enable(myID_REMOVE_LINK, false);
-   markBox->Clear();
-   markBox->Hide();
+   if (trackeeBox->getStringSelection().empty()) {
+      GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
+      GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+      markBox->Clear();
+      markBox->Hide();
+   }
    topPanel->Layout();
-
    trackPanel->Refresh(false);
 }
 
@@ -588,6 +568,44 @@ void MainFrame::onClose(wxCloseEvent& event)
 }
 ///
 //// </_event_handler_definitions> ////
+
+void MainFrame::addTrackee(std::string key)
+{
+   assert (!key.empty());
+
+   auto pair = trackees.insert(std::make_pair(key, Trackee{9, movie->getSize()})); // ...
+   assert (std::get<1>(pair));
+
+   trackPanel->addTrack(key, std::get<1>(*std::get<0>(pair)).getTrack());
+   trackPanel->useDrawingToolsOf(key);
+   trackPanel->Refresh(false);
+
+   if (markBox->IsShown())
+   {
+      assert (!markBox->IsEmpty());
+      markBox->Clear();
+      markBox->Hide();
+      topPanel->Layout();
+   }
+   // wxWindow::GetEffectiveMinSize() is, as per its documentation, "the value used by
+   // sizers to determine the appropriate amount of space to allocate for the widget" and
+   // "called by a wxSizer when it queries the size of a window or control"; as *listBox
+   // is added to its sizer with a proportion of 0, that should be the value the sizer
+   // ends up giving it (afaics); thus, this condition should determine if posting a size
+   // event to *listBox' parent would change anything.
+   else if (trackeeBox->GetEffectiveMinSize().GetHeight() !=
+            trackeeBox->GetSize().GetHeight())
+   {
+      // From the documentation of wxWindow::SendSizeEvent(): "It is sometimes useful to
+      // call this function after [...] a child size changes.  Note that if the frame is
+      // using [...] sizers [...], it is enough to call wxWindow::Layout() directly and
+      // this function should not be used [...]."
+      topPanel->Layout();
+   }
+
+   GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
+   GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+}
 
 wxBitmap MainFrame::getBitmap(std::size_t index)
 {
