@@ -46,7 +46,7 @@ TrackeeBox::TrackeeBox(wxWindow* parent, wxWindowID id, const wxPoint& pos,
    textCtrl->Bind(wxEVT_SET_FOCUS, &TrackeeBox::onFocus, this, id);
    listBox->Bind(wxEVT_SET_FOCUS, &TrackeeBox::onFocus, this, id);
    textCtrl->Bind(wxEVT_KILL_FOCUS, &TrackeeBox::onFocus, this, id);
-   Bind(wxEVT_COMMAND_TEXT_ENTER, &TrackeeBox::onEnter, this, id);
+   //Bind(wxEVT_COMMAND_TEXT_ENTER, &TrackeeBox::onEnter, this, id);
    Bind(wxEVT_KEY_UP, &TrackeeBox::onKeyUp, this);
    listBox->Bind(wxEVT_CONTEXT_MENU, &TrackeeBox::onContextMenu, this);
    ///
@@ -149,6 +149,7 @@ void TrackeeBox::onFocus(wxFocusEvent& event)
    event.Skip();
 }
 
+/*
 void TrackeeBox::onEnter(wxCommandEvent& event)
 {
    if (!addTrackee().empty())
@@ -165,6 +166,7 @@ void TrackeeBox::onEnter(wxCommandEvent& event)
    }
    event.Skip();
 }
+*/
 
 void TrackeeBox::onKeyUp(wxKeyEvent&)
 {
