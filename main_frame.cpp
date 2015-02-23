@@ -87,7 +87,7 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    fileMenu->AppendSeparator();
    fileMenu->Append(myID_TRACK, "&Track\tCtrl+T");
    fileMenu->AppendSeparator();
-   fileMenu->Append(wxID_EXIT);
+   fileMenu->Append(wxID_EXIT, "&Quit\tCtrl+Q");
 
    editMenu->Append(wxID_PROPERTIES, "&Properties\tCtrl+P");
    editMenu->Enable(wxID_PROPERTIES, false);
