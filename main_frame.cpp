@@ -603,7 +603,6 @@ void MainFrame::addTrackee(std::string key)
       topPanel->Layout();
    }
 
-   GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
    GetMenuBar()->Enable(myID_REMOVE_LINK, false);
 }
 
