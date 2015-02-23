@@ -134,16 +134,14 @@ void TrackeeBox::onFocus(wxFocusEvent& event)
 {
    if (event.GetEventType() == wxEVT_SET_FOCUS) {
       if (event.GetEventObject() == textCtrl) {
-         //listBox->SetSelection(wxNOT_FOUND);
-      }
-      else if (event.GetEventObject() == listBox) {
-         //textCtrl->SetFocus();
-         //return;
+         listBox->SetSelection(wxNOT_FOUND);
       }
    }
+   /*
    else if (event.GetEventType() == wxEVT_KILL_FOCUS) {
 
    }
+   */
    // "The focus event handlers should almost invariably call wxEvent::Skip() on their
    // event argument to allow the default handling to take place."
    event.Skip();
