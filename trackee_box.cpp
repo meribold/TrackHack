@@ -138,7 +138,7 @@ void TrackeeBox::onFocus(wxFocusEvent& event)
       }
       else if (event.GetEventObject() == listBox) {
          //textCtrl->SetFocus();
-         return;
+         //return;
       }
    }
    else if (event.GetEventType() == wxEVT_KILL_FOCUS) {
