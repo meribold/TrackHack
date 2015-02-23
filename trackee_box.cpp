@@ -101,6 +101,7 @@ std::string TrackeeBox::addTrackee()
 void TrackeeBox::deleteTrackee(unsigned n)
 {
    listBox->Delete(n);
+   suggestId();
 }
 
 void TrackeeBox::deleteSelection()
