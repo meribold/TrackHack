@@ -12,6 +12,70 @@
 
 #include "track_panel.h"
 
+/*
+// http://www.iscc.org/pdf/PC54_1724_001.pdf
+// http://hackerspace.lifehacker.com/some-os-x-calendar-tips-1658107833/1665644975
+constexpr std::array<std::array<unsigned char, 3>, 18> colors = {
+   //std::array<unsigned char, 3>{0xf2, 0xf3, 0xf4},
+   //std::array<unsigned char, 3>{0x22, 0x22, 0x22},
+   std::array<unsigned char, 3>{0xf3, 0xc3, 0x00},
+   std::array<unsigned char, 3>{0x87, 0x56, 0x92},
+   std::array<unsigned char, 3>{0xf3, 0x84, 0x00},
+   std::array<unsigned char, 3>{0xa1, 0xca, 0xf1},
+   std::array<unsigned char, 3>{0xbe, 0x00, 0x32},
+   //std::array<unsigned char, 3>{0xc2, 0xb2, 0x80},
+   //std::array<unsigned char, 3>{0x84, 0x84, 0x82},
+   std::array<unsigned char, 3>{0x00, 0x88, 0x56},
+   std::array<unsigned char, 3>{0xe6, 0x8f, 0xac},
+   std::array<unsigned char, 3>{0x00, 0x67, 0xa5},
+   std::array<unsigned char, 3>{0xf9, 0x93, 0x79},
+   std::array<unsigned char, 3>{0x60, 0x4e, 0x97},
+   std::array<unsigned char, 3>{0xf6, 0xa6, 0x00},
+   std::array<unsigned char, 3>{0xb3, 0x44, 0x6c},
+   std::array<unsigned char, 3>{0xdc, 0xd3, 0x00},
+   std::array<unsigned char, 3>{0x88, 0x2d, 0x17},
+   std::array<unsigned char, 3>{0x8d, 0xb6, 0x00},
+   std::array<unsigned char, 3>{0x65, 0x45, 0x22},
+   std::array<unsigned char, 3>{0xe2, 0x58, 0x22},
+   std::array<unsigned char, 3>{0x2b, 0x3d, 0x26}
+};
+*/
+
+/*
+constexpr std::array<std::array<unsigned char, 3>, 8> colors = {
+   std::array<unsigned char, 3>{0xdd, 0x48, 0x14}, // Ubuntu Orange
+   std::array<unsigned char, 3>{0x55, 0x6b, 0x2f}, // CSS3 "X11" Dark Olive Green
+   std::array<unsigned char, 3>{0x00, 0xbf, 0xff}, // W3C "X11" Deep Sky Blue
+   std::array<unsigned char, 3>{0xff, 0xa7, 0x1a}, // Day[9] Yellow
+   std::array<unsigned char, 3>{0x8b, 0x00, 0x00}, // CSS3 "X11" Dark Red
+   std::array<unsigned char, 3>{0x19, 0x19, 0x70}, // W3C "X11" Midnight Blue
+   std::array<unsigned char, 3>{0x32, 0xcd, 0x32}, // W3C "X11" Lime Green
+   std::array<unsigned char, 3>{0x77, 0x29, 0x53}  // Canonical Aubergine
+};
+*/
+
+constexpr std::array<std::array<unsigned char, 3>, 19> colors = {
+   std::array<unsigned char, 3>{0x00, 0xff, 0xff}, // X11 Cyan
+   std::array<unsigned char, 3>{0xff, 0x00, 0x00}, // X11 Red
+   std::array<unsigned char, 3>{0x00, 0xff, 0x00}, // X11 Green
+   std::array<unsigned char, 3>{0xff, 0xff, 0x00}, // X11 Yellow
+   std::array<unsigned char, 3>{0x1e, 0x90, 0xff}, // X11 Dodger Blue
+   std::array<unsigned char, 3>{0xff, 0x14, 0x93}, // X11 Deep Pink
+   std::array<unsigned char, 3>{0xff, 0x8c, 0x00}, // X11 Dark Orange
+   std::array<unsigned char, 3>{0x00, 0x00, 0xff}, // X11 Blue
+   std::array<unsigned char, 3>{0x00, 0x80, 0x00}, // X11 Web Green
+   std::array<unsigned char, 3>{0xff, 0x45, 0x00}, // X11 Orange Red
+   std::array<unsigned char, 3>{0xa0, 0x20, 0xf0}, // X11 Purple
+   std::array<unsigned char, 3>{0xff, 0xb6, 0xc1}, // X11 Light Pink
+   std::array<unsigned char, 3>{0xad, 0xff, 0x2f}, // X11 Green Yellow
+   std::array<unsigned char, 3>{0x00, 0xfa, 0x9a}, // X11 Medium Spring Green
+   std::array<unsigned char, 3>{0x8b, 0x00, 0x00}, // X11 Dark Red
+   std::array<unsigned char, 3>{0xf0, 0xe6, 0x8c}, // X11 Khaki
+   std::array<unsigned char, 3>{0xad, 0xd8, 0xe6}, // X11 Light Blue
+   std::array<unsigned char, 3>{0x19, 0x19, 0x70}, // X11 Midnight Blue
+   std::array<unsigned char, 3>{0x80, 0x80, 0x00}, // X11 Olive
+};
+
 TrackPanel::TrackPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
    const wxSize& size) :
    wxPanel{parent, id, pos, size},
@@ -23,31 +87,12 @@ TrackPanel::TrackPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 {
    //// <_..._> ////
    ///
-   // Ubuntu Orange
-   drawingToolStack.push(DrawingTools{wxPen{wxColour{0xdd, 0x48, 0x14}},
-      wxBrush{wxColour{0xdd, 0x48, 0x14, 0x70}}});
-   // CSS3 "X11" Dark Olive Green
-   drawingToolStack.push(DrawingTools{wxPen{wxColour{0x55, 0x6b, 0x2f}},
-      wxBrush{wxColour{0x55, 0x6b, 0x2f, 0x70}}});
-   // W3C "X11" Deep Sky Blue
-   drawingToolStack.push(DrawingTools{wxPen{wxColour{0x00, 0xbf, 0xff}},
-      wxBrush{wxColour{0x00, 0xbf, 0xff, 0x70}}});
-   // Day[9] Yellow
-   drawingToolStack.push(DrawingTools{wxPen{wxColour{0xff, 0xa7, 0x1a}},
-      wxBrush{wxColour{0xff, 0xa7, 0x1a, 0x70}}});
-   // CSS3 "X11" Dark Red
-   drawingToolStack.push(DrawingTools{wxPen{wxColour{0x8b, 0x00, 0x00}},
-      wxBrush{wxColour{0x8b, 0x00, 0x00, 0x70}}});
-   // W3C "X11" Midnight Blue
-   drawingToolStack.push(DrawingTools{wxPen{wxColour{0x19, 0x19, 0x70}},
-      wxBrush{wxColour{0x19, 0x19, 0x70, 0x70}}});
-   // W3C "X11" Lime Green
-   drawingToolStack.push(DrawingTools{wxPen{wxColour{0x32, 0xcd, 0x32}},
-      wxBrush{wxColour{0x32, 0xcd, 0x32, 0x70}}});
-   // Canonical Aubergine
-   drawingToolStack.push(DrawingTools{wxPen{wxColour{0x77, 0x29, 0x53}},
-      wxBrush{wxColour{0x77, 0x29, 0x53, 0x70}}});
-   // TODO: more colors!
+   for (auto i = colors.rbegin(); i != colors.rend(); ++i) {
+      unsigned char r = (*i)[0], g = (*i)[1], b = (*i)[2];
+      drawingToolStack.push(DrawingTools{wxPen{wxColour{r, g, b}},
+         wxBrush{wxColour{r, g, b, 0x70}}});
+   }
+   // "for (auto color : colors)" doesn't give us the right order.
 
    // no pop() before the pen and brush are assigned to a track
    defaultPen = drawingToolStack.top().pen;
