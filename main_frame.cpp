@@ -577,7 +577,7 @@ void MainFrame::addTrackee(std::string key)
    assert (std::get<1>(pair));
 
    trackPanel->addTrack(key, std::get<1>(*std::get<0>(pair)).getTrack());
-   trackPanel->useDrawingToolsOf(key);
+   //trackPanel->useDrawingToolsOf(key);
    trackPanel->Refresh(false);
 
    if (markBox->IsShown())

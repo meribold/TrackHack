@@ -154,7 +154,11 @@ void TrackPanel::addTrack(const std::string& key, std::weak_ptr<const Track> tra
       std::make_pair(key, TrackVisuals{drawingToolStack.top(), track}));
 
    // Reuse the last colour indefinitely. TODO: don't.
-   if (drawingToolStack.size() > 1) drawingToolStack.pop();
+   if (drawingToolStack.size() > 1) {
+      drawingToolStack.pop();
+      defaultPen = drawingToolStack.top().pen;
+      defaultBrush = drawingToolStack.top().brush;
+   }
 }
 
 void TrackPanel::eraseTrack(const std::string& key)
