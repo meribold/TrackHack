@@ -193,43 +193,57 @@ namespace {
 
 void MainFrame::onTrackeeBoxSelected(wxCommandEvent& event)
 {
-   std::string key = event.GetString().ToStdString();
-
-   auto cachedEffectiveMinHeight = markBox->GetEffectiveMinSize().GetHeight();
-
    markBox->Clear();
-   for (std::size_t i : marks[key])
-      markBox->Append(makeMarkString(i));
 
-   // ...
-   if (markBox->IsShown()) {
-      if (markBox->IsEmpty()) {
+   if (!event.GetString().empty())
+   {
+      std::string key = event.GetString().ToStdString();
+
+      auto cachedEffectiveMinHeight = markBox->GetEffectiveMinSize().GetHeight();
+
+      for (std::size_t i : marks[key])
+         markBox->Append(makeMarkString(i));
+
+      // ...
+      if (markBox->IsShown()) {
+         if (markBox->IsEmpty()) {
+            markBox->Hide();
+            topPanel->Layout();
+         }
+         else if (markBox->GetEffectiveMinSize().GetHeight() != cachedEffectiveMinHeight) {
+            topPanel->Layout();
+         }
+      }
+      else if (!markBox->IsEmpty()) { // mark box is not shown; should it be?
+         markBox->Show();
+         topPanel->Layout();
+      }
+      // ...
+      auto iterator = std::find(marks[key].begin(), marks[key].end(),
+         movieSlider->GetValue());
+      if (iterator != marks[key].end()) {
+         markBox->SetSelection(iterator - marks[key].begin());
+         GetMenuBar()->Enable(myID_REMOVE_LINK, true);
+      }
+      else {
+         GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+      }
+
+      GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
+
+      trackPanel->useDrawingToolsOf(key);
+      trackPanel->Refresh(false);
+   }
+   else
+   {
+      if (markBox->IsShown()) {
          markBox->Hide();
          topPanel->Layout();
       }
-      else if (markBox->GetEffectiveMinSize().GetHeight() != cachedEffectiveMinHeight) {
-         topPanel->Layout();
-      }
-   }
-   else if (!markBox->IsEmpty()) { // mark box is not shown; should it be?
-      markBox->Show();
-      topPanel->Layout();
-   }
-   // ...
-   auto iterator = std::find(marks[key].begin(), marks[key].end(),
-      movieSlider->GetValue());
-   if (iterator != marks[key].end()) {
-      markBox->SetSelection(iterator - marks[key].begin());
-      GetMenuBar()->Enable(myID_REMOVE_LINK, true);
-   }
-   else {
+      trackPanel->useDrawingToolsOf();
+      GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
       GetMenuBar()->Enable(myID_REMOVE_LINK, false);
    }
-
-   GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
-
-   trackPanel->useDrawingToolsOf(key);
-   trackPanel->Refresh(false);
 
    // No event.Skip() necessary.
 }

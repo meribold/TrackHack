@@ -174,12 +174,19 @@ void TrackPanel::eraseTrack(const std::string& key)
 
 void TrackPanel::useDrawingToolsOf(const std::string& key)
 {
-   auto it = trackVisualsMap.find(key);
-
-   if (it != trackVisualsMap.end())
+   if (!key.empty())
    {
-      defaultPen   = std::get<0>(std::get<1>(*it)).pen;
-      defaultBrush = std::get<0>(std::get<1>(*it)).brush;
+      auto it = trackVisualsMap.find(key);
+      if (it != trackVisualsMap.end())
+      {
+         defaultPen   = std::get<0>(std::get<1>(*it)).pen;
+         defaultBrush = std::get<0>(std::get<1>(*it)).brush;
+      }
+   }
+   else
+   {
+      defaultPen = drawingToolStack.top().pen;
+      defaultBrush = drawingToolStack.top().brush;
    }
 }
 

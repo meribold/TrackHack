@@ -49,7 +49,7 @@ class TrackPanel : public wxPanel
 
    // set the pen and brush to be used when drawing anything OTHER than a track, to those
    // used for a particular track
-   void useDrawingToolsOf(const std::string& key);
+   void useDrawingToolsOf(const std::string& key = std::string());
 
    void focusIndex(std::size_t); // ...
 
