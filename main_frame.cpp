@@ -86,17 +86,19 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    // accelerator strings in the following menu items magically work all by themselves.
    fileMenu->Append(wxID_OPEN, "&Open\tCtrl+O");
    fileMenu->AppendSeparator();
-   fileMenu->Append(myID_TRACK, "&Track\tCtrl+T");
+   fileMenu->Append(wxID_SAVE, "&Save image\tCtrl+S");
    fileMenu->AppendSeparator();
    fileMenu->Append(wxID_EXIT, "&Quit\tCtrl+Q");
 
-   editMenu->Append(wxID_PROPERTIES, "&Properties\tCtrl+P");
-   editMenu->Enable(wxID_PROPERTIES, false);
+   editMenu->Append(myID_TRACK, "&Track\tCtrl+T");
    editMenu->AppendSeparator();
    editMenu->Append(myID_DELETE_TRACKEE, "&Delete trackee\tCtrl+D");
    editMenu->Enable(myID_DELETE_TRACKEE, false);
    editMenu->Append(myID_REMOVE_LINK, "&Remove link\tCtrl+R");
    editMenu->Enable(myID_REMOVE_LINK, false);
+   editMenu->AppendSeparator();
+   editMenu->Append(wxID_PROPERTIES, "&Properties\tCtrl+P");
+   editMenu->Enable(wxID_PROPERTIES, false);
 
    toolsMenu->Append(wxID_ANY, "View s&ystem-wide configuration file");
    toolsMenu->Append(wxID_ANY, "View &user-specific configuration file");
@@ -145,6 +147,7 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::onSlider, this, wxID_ANY);
 
    Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onOpen, this, wxID_OPEN);
+   Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onSaveImage, this, wxID_SAVE);
    Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onTrack, this, myID_TRACK);
    Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onDeleteTrackee, this,
       myID_DELETE_TRACKEE);
@@ -360,21 +363,7 @@ void MainFrame::onTrackPanelMarked(TrackPanelEvent& event)
 
 void MainFrame::onTrackPanelSave(wxCommandEvent&)
 {
-   auto filename = movie->getFilename(movieSlider->GetValue());
-   auto found = filename.rfind('.');
-   if (found != std::string::npos) {
-      filename.insert(found, "_tracks");
-      //wxBitmap bitmap = getBitmap(0);
-      wxBitmap bitmap{trackPanel->GetClientSize().GetWidth(),
-         trackPanel->GetClientSize().GetHeight()};
-      wxMemoryDC dC{bitmap};
-      wxGraphicsContext *gC = wxGraphicsContext::Create(dC);
-      gC->SetInterpolationQuality(wxINTERPOLATION_BEST);
-      trackPanel->draw(gC);
-      delete gC;
-      dC.SelectObject(wxNullBitmap);
-      bitmap.SaveFile(filename, wxBITMAP_TYPE_BMP);
-   }
+   saveImage();
 }
 
 void MainFrame::onScrollChanged(wxScrollEvent& /*event*/)
@@ -456,6 +445,11 @@ void MainFrame::onOpen(wxCommandEvent&)
                                    // repainted anyway.
       }
    }
+}
+
+void MainFrame::onSaveImage(wxCommandEvent&)
+{
+   saveImage();
 }
 
 void MainFrame::onTrack(wxCommandEvent&)
@@ -638,6 +632,25 @@ void MainFrame::addTrackee(std::string key)
    }
 
    GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+}
+
+void MainFrame::saveImage()
+{
+   auto filename = movie->getFilename(movieSlider->GetValue());
+   auto found = filename.rfind('.');
+   if (found != std::string::npos) {
+      filename.insert(found, "_tracks");
+      //wxBitmap bitmap = getBitmap(0);
+      wxBitmap bitmap{trackPanel->GetClientSize().GetWidth(),
+         trackPanel->GetClientSize().GetHeight()};
+      wxMemoryDC dC{bitmap};
+      wxGraphicsContext *gC = wxGraphicsContext::Create(dC);
+      gC->SetInterpolationQuality(wxINTERPOLATION_BEST);
+      trackPanel->draw(gC);
+      delete gC;
+      dC.SelectObject(wxNullBitmap);
+      bitmap.SaveFile(filename, wxBITMAP_TYPE_BMP);
+   }
 }
 
 wxBitmap MainFrame::getBitmap(std::size_t index)

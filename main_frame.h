@@ -60,12 +60,13 @@ class MainFrame : public wxFrame, public wxThreadHelper
                                             // generated after any change of the sliders
                                             // position in addition to a wxScrollEvent
 
-   void onOpen(wxCommandEvent&);          // process a wxEVT_COMMAND_MENU_SELECTED
-   void onSave(wxCommandEvent&);          // process a wxEVT_COMMAND_MENU_SELECTED
-   void onTrack(wxCommandEvent&);         // process a wxEVT_COMMAND_MENU_SELECTED
-   void onDeleteTrackee(wxCommandEvent&); // process a wxEVT_COMMAND_MENU_SELECTED
-   void onRemoveLink(wxCommandEvent&);    // process a wxEVT_COMMAND_MENU_SELECTED
-   void onAbout(wxCommandEvent&);         // process a wxEVT_COMMAND_MENU_SELECTED
+   // Process wxEVT_COMMAND_MENU_SELECTED
+   void onOpen(wxCommandEvent&);
+   void onSaveImage(wxCommandEvent&);
+   void onTrack(wxCommandEvent&);
+   void onDeleteTrackee(wxCommandEvent&);
+   void onRemoveLink(wxCommandEvent&);
+   void onAbout(wxCommandEvent&);
 
    void onOneThroughThree(wxCommandEvent&); // process a wxEVT_COMMAND_MENU_SELECTED
 
@@ -74,6 +75,7 @@ class MainFrame : public wxFrame, public wxThreadHelper
    void onClose(wxCloseEvent&); // process a wxEVT_CLOSE_WINDOW
 
    void addTrackee(std::string);
+   void saveImage();
 
    wxMenuBar* menuBar;
    wxMenu* fileMenu;
