@@ -80,19 +80,19 @@ std::string TrackeeBox::addTrackee()
          textCtrl->SelectAll(); // ...
 
          // Generage a selection event manually:
-         wxCommandEvent event{wxEVT_COMMAND_LISTBOX_SELECTED, listBox->GetId()};
-         event.SetEventObject(listBox);
-         event.SetInt(position);
-         // Make sure that if event.GetString() is used at any later point during the
+         wxCommandEvent newEvent{wxEVT_COMMAND_LISTBOX_SELECTED, listBox->GetId()};
+         newEvent.SetEventObject(listBox);
+         newEvent.SetInt(position);
+         // Make sure that if newEvent.GetString() is used at any point during the
          // processing of this event, it will match the existing string even if a case
          // sensitive comparator is used since we don't allow strings that match an
          // existing one except for letter case.
-         event.SetString(listBox->GetString(position));
+         newEvent.SetString(listBox->GetString(position));
 
          // The event will be processed immediately, i.e. when this function returns the
          // event was processed. Also, this method doesn't transfer ownership of the event
          // (unlike wxEventHandler::QueueEvent()).
-         GetEventHandler()->ProcessEvent(event);
+         GetEventHandler()->ProcessEvent(newEvent);
       }
    }
    return std::string{};
@@ -186,7 +186,7 @@ void TrackeeBox::onContextMenu(wxContextMenuEvent&)
    auto index = listBox->HitTest(mousePos);
 
    if (index != wxNOT_FOUND) {
-      wxMenu menu;
+      wxMenu menu{};
       menu.Append(wxID_DELETE);
       menu.Bind(wxEVT_COMMAND_MENU_SELECTED, [this, index](wxCommandEvent&) {
             wxCommandEvent* event =

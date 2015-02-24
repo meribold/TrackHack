@@ -7,6 +7,7 @@
 
 #include <wx/dcbuffer.h> // wxBufferedPaintDC
 #include <wx/graphics.h> // wxGraphicsContext
+#include <wx/menu.h>
 #include <wx/rawbmp.h>
 #include <wx/sizer.h>
 
@@ -114,6 +115,8 @@ TrackPanel::TrackPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 
    Bind(wxEVT_LEFT_DOWN, &TrackPanel::onLeftDown, this);
    Bind(wxEVT_MOUSE_CAPTURE_LOST, &TrackPanel::onCaptureLost, this);
+
+   Bind(wxEVT_CONTEXT_MENU, &TrackPanel::onContextMenu, this);
    ///
    //// </_event_handler_mappings_> ////
 }
@@ -195,97 +198,107 @@ void TrackPanel::focusIndex(std::size_t index)
    focusedIndex = index;
 }
 
+// TODO: use wxGraphicsMatrix for transformations?
+void TrackPanel::draw(wxGraphicsContext* gC)
+{
+   // casting to wxDouble; hence parens and not curly braces are used
+   gC->DrawBitmap(bitmap, 0., 0., wxDouble(GetClientSize().GetWidth()),
+      wxDouble(GetClientSize().GetHeight()));
+
+   if (rect.GetPosition().IsFullySpecified() && rect.GetSize().IsFullySpecified())
+   {
+      gC->SetPen(defaultPen);
+      gC->SetBrush(defaultBrush);
+      gC->DrawRectangle(rect.GetX(), rect.GetY(), rect.GetWidth(), rect.GetHeight());
+   }
+
+   for (auto i : trackVisualsMap) // i is a pair of a key and a trackVisuals tuple
+   {
+      const TrackVisuals& trackVisuals = std::get<1>(i);
+      std::shared_ptr<const Track> track = std::get<1>(trackVisuals).lock();
+
+      //// <_..._> ////
+      ///
+      {
+         wxColour colour{std::get<0>(trackVisuals).pen.GetColour()};
+         colour.Set(colour.Red(), colour.Green(), colour.Blue(), 0xc0); // ...
+         gC->SetPen(wxPen{colour});
+
+         wxGraphicsPath path = gC->CreatePath();
+
+         auto it = std::find_if(track->begin(), track->end(),
+            [](const Point& point) -> bool {
+               return point != Point{-1, -1};
+            }
+         );
+
+         while (it != track->end())
+         {
+            path.MoveToPoint(bitmapToDeviceX(it->x), bitmapToDeviceY(it->y));
+
+            while (++it != track->end() && *it != Point{-1, -1}) {
+               path.AddLineToPoint(bitmapToDeviceX(it->x), bitmapToDeviceY(it->y));
+            }
+
+            it = std::find_if(it, track->end(), [](const Point& point) -> bool {
+               return point != Point{-1, -1};
+               }
+            );
+         } gC->StrokePath(path);
+      }
+      ///
+      //// </_..._> ////
+
+      //// <_..._> ////
+      ///
+      {
+         gC->SetPen(*wxBLACK_PEN);
+         wxColour colour{std::get<0>(trackVisuals).brush.GetColour()};
+         colour.Set(colour.Red(), colour.Green(), colour.Blue(), 0xff); // opaque
+         gC->SetBrush(wxBrush{colour});
+
+         if ((*track)[focusedIndex] != Point{-1, -1})
+         {
+            wxCoord deviceX = bitmapToDeviceX((*track)[focusedIndex].x);
+            wxCoord deviceY = bitmapToDeviceY((*track)[focusedIndex].y);
+
+            gC->DrawEllipse(bitmapToDeviceX((*track)[focusedIndex].x) - 3.,
+                              bitmapToDeviceY((*track)[focusedIndex].y) - 3., 6., 6.);
+
+            {
+               const std::string& label = std::get<0>(i);
+               gC->SetFont(wxFont{*wxNORMAL_FONT}, *wxWHITE);
+
+               double width, height, descent, externalLeading;
+               gC->GetTextExtent(label, &width, &height, &descent, &externalLeading);
+               gC->SetPen(*wxTRANSPARENT_PEN);
+               gC->SetBrush(wxBrush{wxColour{0x00, 0x00, 0x00, 0x60}});
+               gC->DrawRoundedRectangle(deviceX + 4., deviceY + 4., width, height, 3);
+               gC->DrawText(label, deviceX + 4., deviceY + 4.);
+            }
+         }
+      }
+      ///
+      //// </_..._> ////
+   }
+}
+
 //// <_event_handler_definitions_> ////
 ///
 void TrackPanel::onPaint(wxPaintEvent&)
 {
    assert (defaultPen.IsOk() && defaultBrush.IsOk());
 
-   wxBufferedPaintDC dC{this};                            // prevents tearing
+   //wxGraphicsContext *gC = wxGraphicsContext::Create(this);
+   wxAutoBufferedPaintDC dC{this};                        // prevents tearing
    wxGraphicsContext *gC = wxGraphicsContext::Create(dC); // uses GDI+ on Windows
+
+   //gC->SetAntialiasMode(wxANTIALIAS_DEFAULT);
+   gC->SetInterpolationQuality(wxINTERPOLATION_NONE);
 
    if (gC)
    {
-      // casting to wxDouble; hence parens and not curly braces are used
-      gC->DrawBitmap(bitmap, 0., 0., wxDouble(GetClientSize().GetWidth()),
-                     wxDouble(GetClientSize().GetHeight()));
-
-      if (rect.GetPosition().IsFullySpecified() && rect.GetSize().IsFullySpecified())
-      {
-         gC->SetPen(defaultPen);
-         gC->SetBrush(defaultBrush);
-         gC->DrawRectangle(rect.GetX(), rect.GetY(), rect.GetWidth(), rect.GetHeight());
-      }
-
-      for (auto i : trackVisualsMap) // i is a pair of a key and a trackVisuals tuple
-      {
-         const TrackVisuals& trackVisuals = std::get<1>(i);
-         std::shared_ptr<const Track> track = std::get<1>(trackVisuals).lock();
-
-         //// <_..._> ////
-         ///
-         {
-            wxColour colour{std::get<0>(trackVisuals).pen.GetColour()};
-            colour.Set(colour.Red(), colour.Green(), colour.Blue(), 0xc0); // ...
-            gC->SetPen(wxPen{colour});
-
-            wxGraphicsPath path = gC->CreatePath();
-
-            auto it = std::find_if(track->begin(), track->end(),
-               [](const Point& point) -> bool {
-                  return point != Point{-1, -1};
-               }
-            );
-
-            while (it != track->end())
-            {
-               path.MoveToPoint(bitmapToDeviceX(it->x), bitmapToDeviceY(it->y));
-
-               while (++it != track->end() && *it != Point{-1, -1}) {
-                  path.AddLineToPoint(bitmapToDeviceX(it->x), bitmapToDeviceY(it->y));
-               }
-
-               it = std::find_if(it, track->end(), [](const Point& point) -> bool {
-                  return point != Point{-1, -1};
-                  }
-               );
-            } gC->StrokePath(path);
-         }
-         ///
-         //// </_..._> ////
-
-         //// <_..._> ////
-         ///
-         {
-            gC->SetPen(*wxBLACK_PEN);
-            wxColour colour{std::get<0>(trackVisuals).brush.GetColour()};
-            colour.Set(colour.Red(), colour.Green(), colour.Blue(), 0xff); // opaque
-            gC->SetBrush(wxBrush{colour});
-
-            if ((*track)[focusedIndex] != Point{-1, -1})
-            {
-               wxCoord deviceX = bitmapToDeviceX((*track)[focusedIndex].x);
-               wxCoord deviceY = bitmapToDeviceY((*track)[focusedIndex].y);
-
-               gC->DrawEllipse(bitmapToDeviceX((*track)[focusedIndex].x) - 3.,
-                               bitmapToDeviceY((*track)[focusedIndex].y) - 3., 6., 6.);
-
-               {
-                  const std::string& label = std::get<0>(i);
-                  gC->SetFont(wxFont{*wxNORMAL_FONT}, *wxWHITE);
-
-                  double width, height, descent, externalLeading;
-                  gC->GetTextExtent(label, &width, &height, &descent, &externalLeading);
-                  gC->SetPen(*wxTRANSPARENT_PEN);
-                  gC->SetBrush(wxBrush{wxColour{0x00, 0x00, 0x00, 0x60}});
-                  gC->DrawRoundedRectangle(deviceX + 4., deviceY + 4., width, height, 3);
-                  gC->DrawText(label, deviceX + 4., deviceY + 4.);
-               }
-            }
-         }
-         ///
-         //// </_..._> ////
-      }
+      draw(gC);
       delete gC;
    }
 }
@@ -412,6 +425,21 @@ void TrackPanel::onLeftUp(wxMouseEvent&)
    ReleaseMouse();
    Refresh(false);
 }
+
+void TrackPanel::onContextMenu(wxContextMenuEvent&)
+{
+   wxMenu menu{};
+   menu.Append(wxID_SAVE, "&Save");
+   menu.Bind(wxEVT_COMMAND_MENU_SELECTED, &TrackPanel::onSave, this, wxID_SAVE);
+   PopupMenu(&menu);
+}
+
+void TrackPanel::onSave(wxCommandEvent&)
+{
+   wxCommandEvent newEvent{myEVT_TRACKPANEL_SAVE, GetId()};
+   newEvent.SetEventObject(this);
+   GetEventHandler()->ProcessEvent(newEvent);
+}
 ///
 //// </_event_handler_definitions_> ////
 
@@ -457,5 +485,6 @@ bool TrackPanel::AcceptsFocusFromKeyboard() const {
 //// </_overrides_> ////
 
 wxDEFINE_EVENT(myEVT_TRACKPANEL_MARKED, TrackPanelEvent);
+wxDEFINE_EVENT(myEVT_TRACKPANEL_SAVE, wxCommandEvent);
 
 // vim: tw=90 sw=3 et

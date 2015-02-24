@@ -30,6 +30,7 @@ class TrackPanelEvent; // derived from wxEvent; propagated upwards like command 
 // generated when the user has marked a point in this wxPanel by dragging a rectangle; the
 // pixel with the highest intesity inside the rectangle is used
 wxDECLARE_EVENT(myEVT_TRACKPANEL_MARKED, TrackPanelEvent);
+wxDECLARE_EVENT(myEVT_TRACKPANEL_SAVE, wxCommandEvent);
 
 // Events emitted by this class:
 //    custom event of type TrackPanelEvent with Id myEVT_TRACKPANEL_MARKED; no event macro
@@ -53,21 +54,23 @@ class TrackPanel : public wxPanel
 
    void focusIndex(std::size_t); // ...
 
+   void draw(wxGraphicsContext*);
+
    // coordinate converion functions
    wxCoord bitmapToDeviceX(wxCoord) const;
    wxCoord bitmapToDeviceY(wxCoord) const;
    wxCoord deviceToBitmapX(wxCoord) const;
    wxCoord deviceToBitmapY(wxCoord) const;
 
-   // both functions return false: neither should this panel accept focus from the user
-   // clicking it nor should it be included in the TAB traversal chain
-   virtual bool AcceptsFocus() const;             // override
-   virtual bool AcceptsFocusFromKeyboard() const; // override
+   // Both functions return false: neither should this panel accept focus from the user
+   // clicking it nor should it be included in the TAB traversal chain.
+   virtual bool AcceptsFocus() const override;
+   virtual bool AcceptsFocusFromKeyboard() const override;
 
    private:
 
-   void onPaint(wxPaintEvent&); // process a wxEVT_PAINT
-   void onSize(wxSizeEvent&);   // process a wxEVT_SIZE
+   void onPaint(wxPaintEvent&);                  // process a wxEVT_PAINT
+   void onSize(wxSizeEvent&);                    // process a wxEVT_SIZE
 
    void onLeftDown(wxMouseEvent&);               // process a wxEVT_LEFT_DOWN; captures
                                                  // the mouse
@@ -76,6 +79,9 @@ class TrackPanel : public wxPanel
                                                  // an application that captures the mouse
    void onMotion(wxMouseEvent&);                 // process a wxEVT_MOTION
    void onLeftUp(wxMouseEvent&);                 // process a wxEVT_LEFT_UP
+
+   void onContextMenu(wxContextMenuEvent&);      // process a wxEVT_CONTEXT_MENU
+   void onSave(wxCommandEvent&);                 // process a wxEVT_COMMAND_MENU_SELECTED
 
    wxBitmap bitmap; // platform-dependant bitmap
 
@@ -111,7 +117,7 @@ class TrackPanelEvent : public wxEvent
    }
 
    // Implement pure virtual function Clone().
-   virtual TrackPanelEvent* Clone() const { return new TrackPanelEvent{*this}; } // TODO: override
+   virtual TrackPanelEvent* Clone() const override { return new TrackPanelEvent{*this}; }
 
    const wxPoint& getPoint() const { return point; };
    void setPoint(const wxPoint& point) { this->point = point; };

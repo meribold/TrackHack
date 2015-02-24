@@ -51,8 +51,7 @@ class TrackeeBox : public wxPanel
    // wxKeyEvent keycode WXK_DELETE and posts myEVT_COMMAND_TRACKEEBOX_DELETED.
    void onKeyUp(wxKeyEvent&);
 
-   // processes a wxEVT_CONTEXT_MENU
-   void onContextMenu(wxContextMenuEvent&);
+   void onContextMenu(wxContextMenuEvent&); // process a wxEVT_CONTEXT_MENU
 
    void suggestId();
 

@@ -14,6 +14,7 @@
 #include <wx/filehistory.h> // wxFileHistory
 #include <wx/filename.h>    // wxFileName
 #include <wx/log.h>         // wxLogError()
+#include <wx/dcmemory.h>
 #include <wx/rawbmp.h>
 #include <wx/stdpaths.h>    // wxStandardPaths
 
@@ -137,6 +138,7 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
       myID_LINKBOX);
 
    Bind(myEVT_TRACKPANEL_MARKED, &MainFrame::onTrackPanelMarked, this, wxID_ANY);
+   trackPanel->Bind(myEVT_TRACKPANEL_SAVE, &MainFrame::onTrackPanelSave, this);
 
    Bind(wxEVT_SCROLL_THUMBTRACK, &MainFrame::onScrollThumbtrack, this, wxID_ANY);
    Bind(wxEVT_SCROLL_CHANGED, &MainFrame::onScrollChanged, this, wxID_ANY);
@@ -332,7 +334,8 @@ void MainFrame::onTrackPanelMarked(TrackPanelEvent& event)
          }
       }
 
-      if (markBox->FindString(makeMarkString(movieSlider->GetValue())) == wxNOT_FOUND)
+      if (!trackeeBox->getStringSelection().empty() &&
+         markBox->FindString(makeMarkString(movieSlider->GetValue())) == wxNOT_FOUND)
       {
          auto cachedEffectiveMinHeight = markBox->GetEffectiveMinSize().GetHeight();
 
@@ -350,10 +353,28 @@ void MainFrame::onTrackPanelMarked(TrackPanelEvent& event)
             topPanel->Layout();
          }
       }
-      // TODO: is this unneeded on Windows? Why?
-      trackPanel->Refresh(false);
+      trackPanel->Refresh(false); // TODO: is this unneeded on Windows? Why?
    }
    // Don't Skip() the event.
+}
+
+void MainFrame::onTrackPanelSave(wxCommandEvent&)
+{
+   auto filename = movie->getFilename(movieSlider->GetValue());
+   auto found = filename.rfind('.');
+   if (found != std::string::npos) {
+      filename.insert(found, "_tracks");
+      //wxBitmap bitmap = getBitmap(0);
+      wxBitmap bitmap{trackPanel->GetClientSize().GetWidth(),
+         trackPanel->GetClientSize().GetHeight()};
+      wxMemoryDC dC{bitmap};
+      wxGraphicsContext *gC = wxGraphicsContext::Create(dC);
+      gC->SetInterpolationQuality(wxINTERPOLATION_BEST);
+      trackPanel->draw(gC);
+      delete gC;
+      dC.SelectObject(wxNullBitmap);
+      bitmap.SaveFile(filename, wxBITMAP_TYPE_BMP);
+   }
 }
 
 void MainFrame::onScrollChanged(wxScrollEvent& /*event*/)
@@ -591,7 +612,6 @@ void MainFrame::addTrackee(std::string key)
    assert (std::get<1>(pair));
 
    trackPanel->addTrack(key, std::get<1>(*std::get<0>(pair)).getTrack());
-   //trackPanel->useDrawingToolsOf(key);
    trackPanel->Refresh(false);
 
    if (markBox->IsShown())
