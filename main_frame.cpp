@@ -625,8 +625,12 @@ void MainFrame::onTrackingCompleted(wxThreadEvent&)
    trackeeBox->Enable();
    trackPanel->Enable();
 
-   GetMenuBar()->Enable(myID_DELETE_TRACKEE, true); // TODO: only if a trackee is selected
-   GetMenuBar()->Enable(myID_REMOVE_LINK, true); // TODO: only if a link is selected
+   if (!trackeeBox->getStringSelection().empty()) {
+      GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
+   }
+   if (markBox->IsShown() && markBox->GetSelection() != wxNOT_FOUND) {
+      GetMenuBar()->Enable(myID_REMOVE_LINK, true);
+   }
 
    trackPanel->Refresh(false);
 }
