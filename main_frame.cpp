@@ -558,8 +558,54 @@ void MainFrame::onOneThroughThree(wxCommandEvent&)
    }
 }
 
+/* From ##c++
+ *
+ * 10:20 < meribold> Does std::ofstream clear the contents of a file when i don't specify
+ *                   an openmode?
+ * 10:23 < TinoDidriksen> Default is to truncate, yes.
+ * 10:24 < meribold> TinoDidriksen: Good to know; i was looking at some code i wrote 2
+ *                   years ago and wondering if it only worked because i was lucky
+ * 10:24 < GrecKo> is it ? reading http://en.cppreference.com/w/cpp/io/basic_ofstream/open
+ *                 I would assume default is only out (open for writing)
+ * 10:28 < TinoDidriksen> GrecKo, devil is in the details. It must behave as if fopen()
+ *                        was used, and fopen() with flag "w" truncates.
+ * 10:28 < GrecKo> ok
+ * 10:29 < GrecKo> ok I didn't read this
+ *                 http://en.cppreference.com/w/cpp/io/basic_filebuf/open , I understand
+ *                 now
+ * 10:30 < TinoDidriksen> Ah, nice overview.
+ */
 void MainFrame::onTrackingCompleted(wxThreadEvent&)
 {
+
+   if (trackees.empty()) return;
+
+   {
+      std::ofstream oStream{movie->getDir() + "all_tracks.txt"}; // RAII
+
+      oStream << "File name";
+
+      for (const auto& pair : trackees)
+      {
+         const std::string key = std::get<0>(pair);
+         oStream << '\t' << key << " (x)\t" << key << " (y)";
+      }
+      oStream << '\n';
+
+      for (std::size_t i = 0; i < movie->getSize(); ++i)
+      {
+         oStream << movie->getFrame(i).getFilename();
+
+         for (const auto& pair : trackees)
+         {
+            const Trackee trackee = std::get<1>(pair);
+            std::shared_ptr<const Track> track = trackee.getTrack().lock();
+            oStream << '\t' << (*track)[i].x << '\t' << (*track)[i].y;
+         }
+         oStream << '\n';
+      }
+   }
+
    for (const auto& pair : trackees)
    {
       const std::string key = std::get<0>(pair);
@@ -572,16 +618,15 @@ void MainFrame::onTrackingCompleted(wxThreadEvent&)
       for (std::size_t i = 0; i < movie->getSize(); ++i)
       {
          oStream << movie->getFrame(i).getFilename() << '\t' << (*track)[i].x << '\t' <<
-            (*track)[i].y << std::endl;
+            (*track)[i].y << '\n';
       }
-      oStream.close();
    }
 
    trackeeBox->Enable();
    trackPanel->Enable();
 
-   GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
-   GetMenuBar()->Enable(myID_REMOVE_LINK, true);
+   GetMenuBar()->Enable(myID_DELETE_TRACKEE, true); // TODO: only if a trackee is selected
+   GetMenuBar()->Enable(myID_REMOVE_LINK, true); // TODO: only if a link is selected
 
    trackPanel->Refresh(false);
 }
