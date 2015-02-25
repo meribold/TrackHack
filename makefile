@@ -26,7 +26,8 @@ LDFLAGS  := -std=c++14 -Wall -Wextra -Wno-old-style-cast -pedantic \
             $(addprefix -L, $(LDIRS))
 PROG     := track_hack
 SRCS     := app.cpp bitmap.cpp frame.cpp main_frame.cpp movie.cpp open_movie_wizard.cpp \
-            track_panel.cpp trackee.cpp tracker.cpp trackee_box.cpp one_through_three.cpp
+            track_panel.cpp trackee.cpp tracker.cpp trackee_box.cpp ibidi_export.cpp \
+            one_through_three.cpp
 OBJS     := $(SRCS:.cpp=.o)
 PREREQS  := $(SRCS:.cpp=.d)
 

@@ -68,6 +68,7 @@ class MainFrame : public wxFrame, public wxThreadHelper
    void onRemoveLink(wxCommandEvent&);
    void onAbout(wxCommandEvent&);
 
+   void onIbidiExport(wxCommandEvent&);     // process a wxEVT_COMMAND_MENU_SELECTED
    void onOneThroughThree(wxCommandEvent&); // process a wxEVT_COMMAND_MENU_SELECTED
 
    void onTrackingCompleted(wxThreadEvent&); // process a myEVT_TRACKING_COMPLETED

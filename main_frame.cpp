@@ -23,6 +23,7 @@
 #include "track_panel.h"
 #include "trackee_box.h"
 
+#include "ibidi_export.h"
 #include "one_through_three.h"
 
 // weakly typed enum because implicit conversion is convenient
@@ -84,9 +85,10 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    ///
    // See the documentation of wxMenuItem::SetItemLabel() to find how the mnemonics and
    // accelerator strings in the following menu items magically work all by themselves.
-   fileMenu->Append(wxID_OPEN, "&Open\tCtrl+O");
+   fileMenu->Append(wxID_OPEN, "&Open\tCtrl+O", "Load a movie composed of grayscale "
+      "bitmaps");
    fileMenu->AppendSeparator();
-   fileMenu->Append(wxID_SAVE, "&Save image\tCtrl+S");
+   fileMenu->Append(wxID_SAVE, "&Save image\tCtrl+S", "Save an image of the panel below");
    fileMenu->AppendSeparator();
    fileMenu->Append(wxID_EXIT, "&Quit\tCtrl+Q");
 
@@ -107,6 +109,9 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
 
    wxWindowID myID_ONE_THREE = NewControlId();
    plugInMenu->Append(myID_ONE_THREE, "OneToThree");
+   wxWindowID myID_IBIDI_EXPORT = NewControlId();
+   plugInMenu->Append(myID_IBIDI_EXPORT, "ibidi export", "Save all tracks formatted to "
+      "be imported by ibidi's Chemotaxis and Migration Tool");
 
    helpMenu->Append(wxID_ABOUT, "&About TrackHack");
 
@@ -114,10 +119,13 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    menuBar->Append(editMenu, "&Edit");
    //menuBar->Append(viewMenu, "&View");
    menuBar->Append(toolsMenu, "&Tools");
-   menuBar->Append(plugInMenu, "&Plug-ins");
+   //menuBar->Append(plugInMenu, "&Plug-ins");
+   menuBar->Append(plugInMenu, "E&xtras");
    menuBar->Append(helpMenu, "&Help");
 
    SetMenuBar(menuBar);
+
+   menuBar->EnableTop(menuBar->FindMenu("&Tools"), false);
    ///
    //// </_menu_bar_construction_> ////
 
@@ -156,6 +164,7 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    Bind(wxEVT_COMMAND_MENU_SELECTED, std::bind(&MainFrame::Close, this, true), wxID_EXIT);
    Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onAbout, this, wxID_ABOUT);
 
+   Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onIbidiExport, this, myID_IBIDI_EXPORT);
    Bind(wxEVT_COMMAND_MENU_SELECTED, &MainFrame::onOneThroughThree, this, myID_ONE_THREE);
 
    Bind(myEVT_TRACKING_COMPLETED, &MainFrame::onTrackingCompleted, this, wxID_ANY);
@@ -541,6 +550,14 @@ void MainFrame::onAbout(wxCommandEvent&)
    ::wxAboutBox(info, this);
 }
 
+void MainFrame::onIbidiExport(wxCommandEvent&)
+{
+   if (trackees.empty()) return;
+
+   std::string fileName = movie->getDir() + "ibidi_tracks.txt";
+   ibidiExport(fileName, trackees);
+}
+
 void MainFrame::onOneThroughThree(wxCommandEvent&)
 {
    std::string key = trackeeBox->getStringSelection().ToStdString();
@@ -577,7 +594,6 @@ void MainFrame::onOneThroughThree(wxCommandEvent&)
  */
 void MainFrame::onTrackingCompleted(wxThreadEvent&)
 {
-
    if (trackees.empty()) return;
 
    {
