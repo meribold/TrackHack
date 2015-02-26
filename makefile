@@ -31,8 +31,8 @@ OBJS     := $(SRCS:.cpp=.o)
 PREREQS  := $(SRCS:.cpp=.d)
 
 debug:   CXXFLAGS += -g
-release: CXXFLAGS += -Ofast -flto
-release: LDFLAGS  += -Ofast -flto
+release: CXXFLAGS += -Ofast -flto -fuse-linker-plugin
+release: LDFLAGS  += -Ofast -flto -fuse-linker-plugin
 
 ifeq ($(UNAME), Linux)
    LDLIBS += -lboost_thread -lboost_regex -lboost_filesystem -lboost_system
