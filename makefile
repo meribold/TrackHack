@@ -17,19 +17,22 @@ UNAME    := $(shell uname)
 CXX      := g++
 WXCONFIG := wx-config
 IDIRS    :=
-CXXFLAGS := -std=c++14 -Wall -Wextra -Wno-old-style-cast -pedantic -g -c \
-            $$($(WXCONFIG) --cxxflags) $(addprefix -I, $(IDIRS))
+CXXFLAGS := $$($(WXCONFIG) --cxxflags) -std=c++14 -Wall -Wextra -Wno-old-style-cast \
+            -pedantic $(addprefix -I, $(IDIRS))
 CPPFLAGS := -std=c++14 $$($(WXCONFIG) --cppflags)
 LDIRS    :=
 LDLIBS   := $$($(WXCONFIG) --libs)
-LDFLAGS  := -std=c++14 -Wall -Wextra -Wno-old-style-cast -pedantic \
-            $(addprefix -L, $(LDIRS))
+LDFLAGS  := $(CXXFLAGS) $(addprefix -L, $(LDIRS))
 PROG     := track_hack
-SRCS     := app.cpp bitmap.cpp frame.cpp main_frame.cpp movie.cpp open_movie_wizard.cpp \
-            track_panel.cpp trackee.cpp tracker.cpp trackee_box.cpp ibidi_export.cpp \
-            one_through_three.cpp
+SRCS     := app.cpp bitmap.cpp color_pool.cpp frame.cpp main_frame.cpp movie.cpp \
+            open_movie_wizard.cpp track_panel.cpp trackee.cpp tracker.cpp \
+            trackee_box.cpp ibidi_export.cpp one_through_three.cpp
 OBJS     := $(SRCS:.cpp=.o)
 PREREQS  := $(SRCS:.cpp=.d)
+
+debug:   CXXFLAGS += -g
+release: CXXFLAGS += -Ofast -flto
+release: LDFLAGS  += -Ofast -flto
 
 ifeq ($(UNAME), Linux)
    LDLIBS += -lboost_thread -lboost_regex -lboost_filesystem -lboost_system
@@ -43,13 +46,17 @@ endif
 
 .PHONY: all clean
 
-all: $(OBJS) $(PROG)
+all: $(PROG)
+
+debug:   all
+release: all
 
 ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
    # Don't emit a warning if files are missing (leading "-"); their existence is ensured
    -include $(PREREQS) # when building the respective object files.
 endif
 
+# https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
 $(PROG): $(OBJS) $(RCFILE:%=%.o)
 	$(CXX) $(LDFLAGS) $+ $(LDLIBS) -o $@
 
@@ -67,7 +74,8 @@ $(RCFILE:%=%.o): $(RCFILE)
 
 .SECONDEXPANSION:
 
+# https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
 $(OBJS): $$(subst .o,.d,$$@)
-	$(CXX) $(CXXFLAGS) $(patsubst %.o,%.cpp,$@) -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
 
 # vim: tw=90 ts=8 sw=3 noet
