@@ -116,6 +116,11 @@ void TrackeeBox::deleteSelection()
          else {
             listBox->SetSelection(selection - 1);
          }
+         wxCommandEvent newEvent{wxEVT_COMMAND_LISTBOX_SELECTED, listBox->GetId()};
+         newEvent.SetEventObject(listBox);
+         newEvent.SetInt(listBox->GetSelection());
+         newEvent.SetString(listBox->GetStringSelection());
+         GetEventHandler()->ProcessEvent(newEvent);
       }
    }
 }
