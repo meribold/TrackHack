@@ -542,10 +542,9 @@ void MainFrame::onRemoveLink(wxCommandEvent&)
 void MainFrame::onAbout(wxCommandEvent&)
 {
    wxAboutDialogInfo info;
-   info.SetName(u8"TrackHack");
-   info.SetDescription(u8"This is a simple program for tracking objects in a movie "
-      "composed of individual grayscale images; tracking is based on intensity peaks and "
-      "speed caps.");
+   info.SetDescription(u8"TrackHack is a simple program for tracking objects in a movie "
+      "composed of grayscale images. Developed at the University of Muenster."
+   );
 
    ::wxAboutBox(info, this);
 }
