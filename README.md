@@ -10,6 +10,8 @@ wxWidgets.
 
 Building on GNU/Linux and Windows (using MSYS2 and MinGW-w64) should work.
 
+Developed at the University of Muenster.
+
 <!---
 For Windows, you can download the most recent executable along with some required
 libraries
