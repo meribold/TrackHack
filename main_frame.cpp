@@ -545,7 +545,9 @@ void MainFrame::onAbout(wxCommandEvent&)
    info.AddDeveloper("Lukas Waymann");
    info.SetWebSite("https://github.com/meribold/TrackHack");
    info.SetDescription(u8"TrackHack is a simple program for tracking objects in a movie "
-      "composed of grayscale images.\nDeveloped at the University of Muenster."
+      "composed of grayscale images.\nDeveloped at the Center for Biomedical Optics and "
+      "Photonics (CeBOP) and the Biomedical\nTechnology Center of the University of "
+      "Münster."
    );
 
    ::wxAboutBox(info, this);
