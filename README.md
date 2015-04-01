@@ -5,8 +5,10 @@ Very basic (but fast), semi-automatic single particle tracking software. Designe
 cells in sequences of phase shift images obtained using digital holographic microscopy.
 Only grayscale bitmaps are supported as input.
 
-It's written in C++ and I used to build it on MS Windows with MinGW. It uses some Boost
-libraries (Filesystem, Regex, Thread) and wxWidgets.
+It's written in C++ and uses some Boost libraries (Filesystem, Regex, Thread) and
+wxWidgets.
+
+Building on GNU/Linux and Windows (using MSYS2 and MinGW-w64) should work.
 
 <!---
 For Windows, you can download the most recent executable along with some required
