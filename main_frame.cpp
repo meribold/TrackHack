@@ -13,8 +13,7 @@
 #include <wx/aboutdlg.h>    // wxAboutBox()
 #include <wx/filehistory.h> // wxFileHistory
 #include <wx/filename.h>    // wxFileName
-#include <wx/log.h>         // wxLogError()
-#include <wx/dcmemory.h>
+#include <wx/dcmemory.h>    // wxMemoryDC
 #include <wx/rawbmp.h>
 #include <wx/stdpaths.h>    // wxStandardPaths
 
@@ -780,33 +779,61 @@ wxDEFINE_EVENT(myEVT_TRACKING_COMPLETED, wxThreadEvent);
 template <std::size_t N>
 void createBitmaps(std::string name)
 {
-   constexpr std::size_t SIZE = 24 * 24 / 8;
-   //std::array<std::array<char, SIZE>, N>* xBitMaps =
-      //new std::array<std::array<char, SIZE>, N>;
-   std::array<std::array<char, SIZE>, N> xBitMaps;
+   constexpr unsigned SCALE_FACTOR = 24;
+   //std::array<std::array<char, 24 * 24 / 8>, N>* xBitMaps =
+      //new std::array<std::array<char, 24 * 24 / 8>, N>;
+   std::array<std::array<char, 24 * 24 / 8>, N> xBitMaps;
 
-   for (std::size_t i = 0; i < N; ++i)
+   for (std::size_t bitmapNum = 0; bitmapNum < N; ++bitmapNum)
    {
-      //std::array<char, SIZE>& bits = (*xBitMaps)[i];
-      std::array<char, SIZE>& bits = xBitMaps[i];
-      for (std::size_t j = 0; j < bits.size(); ++j)
-         bits[j] = ~bits[j];
+      std::array<char, 24 * 24 / 8>& bits = xBitMaps[bitmapNum];
+      for (std::size_t i = 0; i < bits.size(); ++i)
+         bits[i] = ~bits[i];
 
-      for (std::size_t j = 0 + 3 + 1; j < 24 - 3 + 1; j = j + 3)
-         bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong();
-      for (std::size_t j = 24 + 3 + 2; j < 48 - 3 + 2; j = j + 3)
-         bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong();
-      for (std::size_t j = 48 + 3; j < 72 - 3;) {
-         bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong(); ++j;
-         bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong(); ++j;
-         bits[j] = bits[j] ^ std::bitset<8>{"01111110"}.to_ulong(); ++j;
+      for (std::size_t i = 0 + 3 + 1; i < 24 - 3 + 1; i += 3)
+         bits[i] = bits[i] ^ std::bitset<8>{"01111110"}.to_ulong();
+      for (std::size_t i = 24 + 3 + 2; i < 48 - 3 + 2; i += 3)
+         bits[i] = bits[i] ^ std::bitset<8>{"01111110"}.to_ulong();
+      for (std::size_t i = 48 + 3; i < 72 - 3;) {
+         bits[i] = bits[i] ^ std::bitset<8>{"01111110"}.to_ulong(); ++i;
+         bits[i] = bits[i] ^ std::bitset<8>{"01111110"}.to_ulong(); ++i;
+         bits[i] = bits[i] ^ std::bitset<8>{"01111110"}.to_ulong(); ++i;
       }
 
-      wxBitmap bitmap{bits.data(), 24, 24};
-
       std::stringstream sStream;
-      sStream << std::setfill('0') << std::setw(2) << i;
-      bitmap.ConvertToImage().SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
+      sStream << std::setfill('0') << std::setw(2) << bitmapNum;
+
+      wxImage image{24 * SCALE_FACTOR, 24 * SCALE_FACTOR};
+      unsigned char* data = image.GetData();
+      for (unsigned rowNum = 0; rowNum < 24; ++rowNum)
+      {
+         for (unsigned colNum = 0; colNum < 24; ++colNum)
+         {
+            unsigned byteNum = (24 * rowNum + colNum) / 8;
+            unsigned bitNum  = (24 * rowNum + colNum) % 8;
+            bool set = (bits[byteNum] >> bitNum) & 1;
+            for (unsigned i = 0; i < SCALE_FACTOR; ++i)
+            {
+               for (unsigned j = 0; j < SCALE_FACTOR; ++j)
+               {
+                  int pixelNum = SCALE_FACTOR * SCALE_FACTOR * 24 * rowNum +
+                     SCALE_FACTOR * colNum + 24 * SCALE_FACTOR * i + j;
+                  data[3 * pixelNum] = set ? 0x20 : 0x00;
+               }
+            }
+         }
+      }
+
+      image.SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
+
+      //wxBitmap bitmap{bits.data(), 24, 24};
+      //bitmap.SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
+
+      /*
+      wxImage image = bitmap.ConvertToImage();
+      image.Rescale(384, 384, wxIMAGE_QUALITY_NEAREST);
+      image.SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
+      */
    }
 
    //delete[] xBitMaps;
