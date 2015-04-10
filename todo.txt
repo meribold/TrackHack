@@ -1,5 +1,7 @@
 Fix bitmaps not being sorted lexicographically on GNU/Linux
 
+Use separate build and source directories
+
 Cancel boxing with right click
 
 Don't start boxing when closing context menu with left click
