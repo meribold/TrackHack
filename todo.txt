@@ -8,6 +8,8 @@ Make trackee speed caps changeable from the UI
 
 "Play" button
 
+Sort left list box?
+
 Load existing tracks with movie. Requires saving which positions were
 user-supplied. It's probably best to save everything in a new file and not to
 auto-save (and create a save button again).
