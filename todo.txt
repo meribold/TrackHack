@@ -14,9 +14,6 @@ Load existing tracks with movie. Requires saving which positions were
 user-supplied. It's probably best to save everything in a new file and not to
 auto-save (and create a save button again).
 
-drawingToolStack should be ordered vector; there's also a bug where the last
-color is pushed to the stack several times
-
 Use wxRichTextStyleListBox and wxRichTextCtrl; no identifiers on TrackPanel?
 
 Can we draw bitmaps faster? Draw to device context? Use wxGraphicsBitmap?

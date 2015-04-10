@@ -1,28 +1,92 @@
 #ifndef COLOR_POOL_H
 #define COLOR_POOL_H
 
+#include <array>
+
 #include <wx/colour.h>
+
+constexpr unsigned numColors = 19;
 
 class ColorPool
 {
    public:
 
-   class Color : public wxColour
-   {
-      public:
+   const wxColour* peek();
 
-      ~Color() {
+   const wxColour* getColor();
 
-      }
-
-      private:
-
-      static ColorPool colorPool;
-   };
+   void returnColor(const wxColour*);
 
    private:
 
-   // ...
+   std::size_t next = 0;
+
+   // Won't compile without double braces.
+   std::array<wxColour, numColors> colors{{
+      wxColour{0x00, 0xff, 0xff}, // X11 Cyan
+      wxColour{0xff, 0x00, 0x00}, // X11 Red
+      wxColour{0x00, 0xff, 0x00}, // X11 Green
+      wxColour{0xff, 0xff, 0x00}, // X11 Yellow
+      wxColour{0x1e, 0x90, 0xff}, // X11 Dodger Blue
+      wxColour{0xff, 0x14, 0x93}, // X11 Deep Pink
+      wxColour{0xff, 0x8c, 0x00}, // X11 Dark Orange
+      wxColour{0x00, 0x00, 0xff}, // X11 Blue
+      wxColour{0x00, 0x80, 0x00}, // X11 Web Green
+      wxColour{0xff, 0x45, 0x00}, // X11 Orange Red
+      wxColour{0xa0, 0x20, 0xf0}, // X11 Purple
+      wxColour{0xff, 0xb6, 0xc1}, // X11 Light Pink
+      wxColour{0xad, 0xff, 0x2f}, // X11 Green Yellow
+      wxColour{0x00, 0xfa, 0x9a}, // X11 Medium Spring Green
+      wxColour{0x8b, 0x00, 0x00}, // X11 Dark Red
+      wxColour{0xf0, 0xe6, 0x8c}, // X11 Khaki
+      wxColour{0xad, 0xd8, 0xe6}, // X11 Light Blue
+      wxColour{0x19, 0x19, 0x70}, // X11 Midnight Blue
+      wxColour{0x80, 0x80, 0x00}, // X11 Olive
+   }};
+
+   /*
+   // http://www.iscc.org/pdf/PC54_1724_001.pdf
+   // http://hackerspace.lifehacker.com/some-os-x-calendar-tips-1658107833/1665644975
+   constexpr std::array<wxColour, 18> colors = {
+      //wxColour{0xf2, 0xf3, 0xf4},
+      //wxColour{0x22, 0x22, 0x22},
+      wxColour{0xf3, 0xc3, 0x00},
+      wxColour{0x87, 0x56, 0x92},
+      wxColour{0xf3, 0x84, 0x00},
+      wxColour{0xa1, 0xca, 0xf1},
+      wxColour{0xbe, 0x00, 0x32},
+      //wxColour{0xc2, 0xb2, 0x80},
+      //wxColour{0x84, 0x84, 0x82},
+      wxColour{0x00, 0x88, 0x56},
+      wxColour{0xe6, 0x8f, 0xac},
+      wxColour{0x00, 0x67, 0xa5},
+      wxColour{0xf9, 0x93, 0x79},
+      wxColour{0x60, 0x4e, 0x97},
+      wxColour{0xf6, 0xa6, 0x00},
+      wxColour{0xb3, 0x44, 0x6c},
+      wxColour{0xdc, 0xd3, 0x00},
+      wxColour{0x88, 0x2d, 0x17},
+      wxColour{0x8d, 0xb6, 0x00},
+      wxColour{0x65, 0x45, 0x22},
+      wxColour{0xe2, 0x58, 0x22},
+      wxColour{0x2b, 0x3d, 0x26}
+   };
+   */
+
+   /*
+   constexpr std::array<wxColour, 8> colors = {
+      wxColour{0xdd, 0x48, 0x14}, // Ubuntu Orange
+      wxColour{0x55, 0x6b, 0x2f}, // CSS3 "X11" Dark Olive Green
+      wxColour{0x00, 0xbf, 0xff}, // W3C "X11" Deep Sky Blue
+      wxColour{0xff, 0xa7, 0x1a}, // Day[9] Yellow
+      wxColour{0x8b, 0x00, 0x00}, // CSS3 "X11" Dark Red
+      wxColour{0x19, 0x19, 0x70}, // W3C "X11" Midnight Blue
+      wxColour{0x32, 0xcd, 0x32}, // W3C "X11" Lime Green
+      wxColour{0x77, 0x29, 0x53}  // Canonical Aubergine
+   };
+   */
+
+   std::array<int, numColors> numUsed{{}};
 };
 
 #endif //COLOR_POOL_H

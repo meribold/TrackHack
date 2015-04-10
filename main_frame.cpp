@@ -261,7 +261,8 @@ void MainFrame::onTrackeeBoxSelected(wxCommandEvent& event)
    // No event.Skip() necessary.
 }
 
-// TODO: move common code from this and onDeleteTrackee() to new function.
+// Called when the TrackeeBox informs us that a trackee should be deleted. TODO: move
+// common code from this and onDeleteTrackee() to new function.
 void MainFrame::onTrackeeBoxDeleted(wxCommandEvent& event)
 {
    std::string key = event.GetString().ToStdString();
@@ -276,6 +277,7 @@ void MainFrame::onTrackeeBoxDeleted(wxCommandEvent& event)
       GetMenuBar()->Enable(myID_REMOVE_LINK, false);
       markBox->Clear();
       markBox->Hide();
+      trackPanel->useDrawingToolsOf();
    }
    topPanel->Layout();
    trackPanel->Refresh(false);
@@ -477,7 +479,8 @@ void MainFrame::onTrack(wxCommandEvent&)
    GetMenuBar()->Enable(myID_REMOVE_LINK, false);
 }
 
-// TODO: move common code from this and onTrackeeBoxDeleted() to new function.
+// Called when we want to delete a trackee. TODO: move common code from this and
+// onTrackeeBoxDeleted() to new function.
 void MainFrame::onDeleteTrackee(wxCommandEvent&)
 {
    std::string key = trackeeBox->getStringSelection().ToStdString();
@@ -496,6 +499,7 @@ void MainFrame::onDeleteTrackee(wxCommandEvent&)
       GetMenuBar()->Enable(myID_REMOVE_LINK, false);
       markBox->Clear();
       markBox->Hide();
+      trackPanel->useDrawingToolsOf();
    }
    topPanel->Layout();
    trackPanel->Refresh(false);

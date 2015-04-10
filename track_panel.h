@@ -4,7 +4,6 @@
 #include <cstddef> // size_t
 #include <map>
 #include <memory> // weak_ptr
-#include <stack>
 #include <string>
 #include <tuple>
 
@@ -16,11 +15,18 @@
 #include <wx/panel.h>
 #include <wx/pen.h>
 
+#include "color_pool.h"
 #include "track.h" // conrete type Track used by the back end to model trajectories
 
 struct DrawingTools {
-   wxPen   pen;
-   wxBrush brush;
+   DrawingTools(const wxPen& pen, const wxBrush& brush) : pen{pen}, brush{brush} {}
+
+   DrawingTools(const wxColour* color) : color{color}, pen{*color},
+      brush{wxColour{color->Red(), color->Green(), color->Blue(), 0x70}} {}
+
+   const wxColour* color;
+   wxPen           pen;
+   wxBrush         brush;
 };
 
 typedef std::tuple<DrawingTools, std::weak_ptr<const Track>> TrackVisuals;
@@ -85,16 +91,15 @@ class TrackPanel : public wxPanel
 
    wxBitmap bitmap; // platform-dependant bitmap
 
-   // a set of easily distinguishable pairs of pens and brushes; objects are removed from
-   // the stack when used and added again if no longer required
-   std::stack<DrawingTools> drawingToolStack;
+   ColorPool colorPool;
 
    // used when drawing anything other than TrackVisuals
-   wxPen   defaultPen;
-   wxBrush defaultBrush;
+   const wxColour* defaultColor;
+   wxPen           defaultPen;
+   wxBrush         defaultBrush;
 
    // When a Track is found to have been deleted, the corresponding TrackVisuals object is
-   // removed and its DrawingTools are added to the stack again.
+   // removed and its color is returned to the ColorPool.
    std::map<std::string, TrackVisuals> trackVisualsMap;
 
    std::size_t focusedIndex; // ...
