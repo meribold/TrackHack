@@ -19,7 +19,7 @@ WXCONFIG := wx-config
 IDIRS    :=
 CXXFLAGS := $$($(WXCONFIG) --cxxflags) -std=c++14 -Wall -Wextra -Wno-old-style-cast \
             -pedantic $(addprefix -I, $(IDIRS))
-CPPFLAGS := -std=c++14 $$($(WXCONFIG) --cppflags)
+CPPFLAGS := $$($(WXCONFIG) --cppflags)
 LDIRS    :=
 LDLIBS   := $$($(WXCONFIG) --libs)
 LDFLAGS  := $(CXXFLAGS) $(addprefix -L, $(LDIRS))
@@ -65,7 +65,7 @@ clean:
 
 $(PREREQS):
 	@set -e; echo "building $@"; \
-	rule=$$($(CXX) -MM $(CPPFLAGS) $(patsubst %.d,%.cpp,$@)); \
+	rule=$$($(CXX) -MM $(CPPFLAGS) $(CXXFLAGS) $(patsubst %.d,%.cpp,$@)); \
 	rule=$@' '$${rule}; \
 	echo "$$rule" > $@
 
