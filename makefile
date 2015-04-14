@@ -63,19 +63,19 @@ $(PROG): $(OBJS) $(RCFILE:%=%.o)
 clean:
 	$(RM) $(OBJS) $(RCFILE:%=%.o) $(PREREQS) $(PROG)
 
-$(PREREQS):
-	@set -e; echo "building $@"; \
-	rule=$$($(CXX) -MM $(CPPFLAGS) $(CXXFLAGS) $(patsubst %.d,%.cpp,$@)); \
-	rule=$@' '$${rule}; \
-	echo "$$rule" > $@
-
 $(RCFILE:%=%.o): $(RCFILE)
 	windres -I/mingw32/include/wx-3.0/ $< -o $@
+
+# If one of these targets (dependency files) doesn't exist, Make will imagine it to have
+# been updated when this rule is run and will also rebuilt the object file corresponding
+# to the dependency file. The dependency file itself will be created along with the object
+# file and included during the next invocation of Make.
+$(PREREQS):
 
 .SECONDEXPANSION:
 
 # https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
 $(OBJS): $$(subst .o,.d,$$@)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
+	$(CXX) -MMD $(CPPFLAGS) $(CXXFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
 
 # vim: tw=90 ts=8 sw=3 noet
