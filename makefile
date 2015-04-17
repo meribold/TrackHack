@@ -48,6 +48,9 @@ endif
 
 all: $(PROG)
 
+debug:   all
+release: all
+
 ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
    # Don't emit a warning if files are missing (leading "-"); their existence is ensured
    -include $(PREREQS) # when building the respective object files.
