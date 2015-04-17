@@ -1,4 +1,4 @@
-SHELL    := /bin/sh
+SHELL := /bin/sh
 
 # There seems to be a built-in rule that matches track_hack.rc which is not cancelled by
 # clearing the suffix list and causes a circular dependency (make: Circular track_hack.rc
@@ -13,9 +13,9 @@ MAKEFLAGS += --no-builtin-rules
 # Clear the suffix list. See section 7.2.1 of the GNU Coding Standards.
 .SUFFICES:
 
-UNAME    := $(shell uname)
 CXX      := g++
 WXCONFIG := wx-config
+UNAME    := $(shell uname)
 IDIRS    :=
 CXXFLAGS := $$($(WXCONFIG) --cxxflags) -std=c++14 -Wall -Wextra -Wno-old-style-cast \
             -pedantic $(addprefix -I, $(IDIRS))
@@ -48,17 +48,16 @@ endif
 
 all: $(PROG)
 
-debug:   all
-release: all
-
 ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
    # Don't emit a warning if files are missing (leading "-"); their existence is ensured
    -include $(PREREQS) # when building the respective object files.
 endif
 
+# Running 'make -p' in a directory with no makefile yields the full list of default rules
+# and variables.
 # https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
 $(PROG): $(OBJS) $(RCFILE:%=%.o)
-	$(CXX) $(LDFLAGS) $+ $(LDLIBS) -o $@
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $+ $(LDLIBS) -o $@
 
 clean:
 	$(RM) $(OBJS) $(RCFILE:%=%.o) $(PREREQS) $(PROG)
@@ -76,6 +75,6 @@ $(PREREQS):
 
 # https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
 $(OBJS): $$(subst .o,.d,$$@)
-	$(CXX) -MMD $(CPPFLAGS) $(CXXFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
+	$(CXX) -MMD $(CXXFLAGS) $(CPPFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
 
 # vim: tw=90 ts=8 sw=3 noet
