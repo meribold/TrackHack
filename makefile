@@ -30,9 +30,15 @@ SRCS     := app.cpp bitmap.cpp color_pool.cpp frame.cpp main_frame.cpp movie.cpp
 OBJS     := $(SRCS:.cpp=.o)
 PREREQS  := $(SRCS:.cpp=.d)
 
-debug:   CXXFLAGS += -g
-release: CXXFLAGS += -O3 -flto -fuse-linker-plugin
-release: LDFLAGS  += -O3 -flto -fuse-linker-plugin
+# Default is release build so users can do a normal make.
+DEBUG ?= 0
+ifeq ($(DEBUG), 0)
+   CXXFLAGS += -O3 -flto -fuse-linker-plugin
+else
+   CXXFLAGS += -DDEBUG -g
+endif
+# stackoverflow.com/questions/1079832/how-can-i-configure-my-makefile-for-debug-and-releas
+# stackoverflow.com/questions/792217/simple-makefile-with-release-and-debug-builds-best-pr
 
 ifeq ($(UNAME), Linux)
    LDLIBS += -lboost_thread -lboost_regex -lboost_filesystem -lboost_system
@@ -47,9 +53,6 @@ endif
 .PHONY: all clean
 
 all: $(PROG)
-
-debug:   all
-release: all
 
 ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
    # Don't emit a warning if files are missing (leading "-"); their existence is ensured
