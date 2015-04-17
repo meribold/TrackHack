@@ -81,6 +81,6 @@ $(PREREQS):
 
 # https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
 $(OBJS): $$(subst .o,.d,$$@)
-	$(CXX) -MMD $(CXXFLAGS) $(CPPFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
+	$(CXX) -MD $(CXXFLAGS) $(CPPFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
 
 # vim: tw=90 ts=8 sw=3 noet
