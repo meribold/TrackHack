@@ -90,6 +90,6 @@ $(depends):
 
 # https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
 $(objects): $$(subst .o,.d,$$@)
-	$(CXX) -MD $(CXXFLAGS) $(CPPFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
+	$(CXX) -MMD $(CXXFLAGS) $(CPPFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
 
 # vim: tw=90 ts=8 sts=3 sw=3 noet
