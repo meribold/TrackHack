@@ -64,8 +64,8 @@ endif
 all: $(program)
 
 ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
-   # Don't emit a warning if files are missing (leading "-"); their existence is ensured
-   -include $(depends) # when building the respective object files.
+   # Include existant dependency files.
+   include $(filter $(depends),$(shell find -regex '.*\.d' -printf '%P\n'))
 endif
 
 # Running 'make -p' in a directory with no makefile yields the full list of default rules
