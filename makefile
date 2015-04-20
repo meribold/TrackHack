@@ -74,6 +74,14 @@ endif
 $(program): $(objects) $(rcfile:%=%.o)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $+ $(LDLIBS) -o $@
 
+# See make.mad-scientist.net/papers/advanced-auto-dependency-generation: Avoiding "No rule
+# to make target ..." Errors. This is a more simple approach to solve the same problem.
+%.h: ;
+%.H: ;
+%.hh: ;
+%.hpp: ;
+%.hxx: ;
+
 clean:
 	$(RM) $(objects) $(rcfile:%=%.o) $(depends) $(program)
 
