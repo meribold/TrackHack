@@ -23,7 +23,6 @@ CPPFLAGS :=
 LDDIRS   :=
 LDFLAGS  :=
 LDLIBS   :=
-OBJDIR   :=
 
 ##########################################################################################
 
@@ -31,18 +30,18 @@ OBJDIR   :=
 DEBUG ?= 0
 ifeq ($(DEBUG), 0)
    CXXFLAGS := -O3 -flto -fuse-linker-plugin $(CXXFLAGS)
-   OBJDIR ?= build/release
+   OBJDIR := build/release
 else
    CXXFLAGS := -DDEBUG -g $(CXXFLAGS)
-   OBJDIR ?= build/debug
+   OBJDIR := build/debug
 endif
 # stackoverflow.com/questions/1079832/how-can-i-configure-my-makefile-for-debug-and-releas
 # stackoverflow.com/questions/792217/simple-makefile-with-release-and-debug-builds-best-pr
 
-program := track_hack
+program := $(addprefix $(OBJDIR)/,track_hack)
 sources := $(wildcard *.cpp)
-objects := $(sources:.cpp=.o)
-depends := $(sources:.cpp=.d)
+objects := $(addprefix $(OBJDIR)/,$(sources:.cpp=.o))
+depends := $(addprefix $(OBJDIR)/,$(sources:.cpp=.d))
 
 CXXFLAGS := $$(wx-config --cxxflags) -std=c++14 $(CXXFLAGS) $(addprefix -I, $(IDIRS))
 CPPFLAGS := $$(wx-config --cppflags) $(CPPFLAGS)
@@ -69,13 +68,16 @@ ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
 endif
 
 # https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
-%.o: %.d
-	$(CXX) -MMD $(CXXFLAGS) $(CPPFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
+$(OBJDIR)/%.o: $(OBJDIR)/%.d | $(OBJDIR)
+	$(CXX) -MMD $(CXXFLAGS) $(CPPFLAGS) $*.cpp -c -o $@
+
+$(OBJDIR):
+	mkdir -p $@
 
 # Running 'make -p' in a directory with no makefile yields the full list of default rules
 # and variables.
 # https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
-$(program): $(objects) $(rcfile:%=%.o)
+$(program): $(objects) $(rcfile:%=%.o) | $(OBJDIR)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $+ $(LDLIBS) -o $@
 
 # See make.mad-scientist.net/papers/advanced-auto-dependency-generation: Avoiding "No rule
