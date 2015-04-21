@@ -68,6 +68,10 @@ ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
    include $(filter $(depends),$(shell find -regex '.*\.d' -printf '%P\n'))
 endif
 
+# https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
+%.o: %.d
+	$(CXX) -MMD $(CXXFLAGS) $(CPPFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
+
 # Running 'make -p' in a directory with no makefile yields the full list of default rules
 # and variables.
 # https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
@@ -93,11 +97,5 @@ $(rcfile:%=%.o): $(rcfile)
 # to the dependency file. The dependency file itself will be created along with the object
 # file and included during the next invocation of Make.
 $(depends):
-
-.SECONDEXPANSION:
-
-# https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
-$(objects): $$(subst .o,.d,$$@)
-	$(CXX) -MMD $(CXXFLAGS) $(CPPFLAGS) $(patsubst %.o,%.cpp,$@) -c -o $@
 
 # vim: tw=90 ts=8 sts=3 sw=3 noet
