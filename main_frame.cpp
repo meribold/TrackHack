@@ -784,8 +784,6 @@ template <std::size_t N>
 void createBitmaps(std::string name)
 {
    constexpr unsigned SCALE_FACTOR = 24;
-   //std::array<std::array<char, 24 * 24 / 8>, N>* xBitMaps =
-      //new std::array<std::array<char, 24 * 24 / 8>, N>;
    std::array<std::array<char, 24 * 24 / 8>, N> xBitMaps;
 
    for (std::size_t bitmapNum = 0; bitmapNum < N; ++bitmapNum)
@@ -807,6 +805,21 @@ void createBitmaps(std::string name)
       std::stringstream sStream;
       sStream << std::setfill('0') << std::setw(2) << bitmapNum;
 
+      // The image often is blurred when being scaled up later (on my Windows system it
+      // wasn't, iirc), so we don't save it like this. Using really small bitmaps also
+      // caused some visual artifacts later.
+      /*
+      wxBitmap bitmap{bits.data(), 24, 24};
+      bitmap.SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
+      */
+
+      // Using wxWidgets' scaling functions directly also blurs the image (dependent on
+      // platform; on my Windows system it didn't, iirc): not doing this either.
+      /*
+      wxImage image = bitmap.ConvertToImage();
+      image.Rescale(384, 384, wxIMAGE_QUALITY_NEAREST);
+      */
+
       wxImage image{24 * SCALE_FACTOR, 24 * SCALE_FACTOR};
       unsigned char* data = image.GetData();
       for (unsigned rowNum = 0; rowNum < 24; ++rowNum)
@@ -823,24 +836,34 @@ void createBitmaps(std::string name)
                   int pixelNum = SCALE_FACTOR * SCALE_FACTOR * 24 * rowNum +
                      SCALE_FACTOR * colNum + 24 * SCALE_FACTOR * i + j;
                   data[3 * pixelNum] = set ? 0x20 : 0x00;
+                  // Don't need green and blue channels.
                }
             }
          }
       }
 
-      image.SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
+      // I don't know how to save using 1 bit per pixel (bpp) and a custom palette...
 
-      //wxBitmap bitmap{bits.data(), 24, 24};
-      //bitmap.SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
-
+      // ... this doesn't work...
       /*
-      wxImage image = bitmap.ConvertToImage();
-      image.Rescale(384, 384, wxIMAGE_QUALITY_NEAREST);
+      constexpr unsigned char colorValues[2] = {0x20, 0x00};
+      const wxPalette palette{2, colorValues, colorValues, colorValues};
+      image.SetPalette(palette);
+      image.SetOption(wxIMAGE_OPTION_BMP_FORMAT, wxBMP_8BPP_PALETTE);
       image.SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
       */
-   }
 
-   //delete[] xBitMaps;
+      // ... neither does this...
+      /*
+      wxBitmap bitmap{image, 1};
+      bitmap.SetPalette(palette);
+      bitmap.SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP, &palette);
+      */
+
+      // ... so I'm using 8-bit grayscale. See "wx/image.h".
+      image.SetOption(wxIMAGE_OPTION_BMP_FORMAT, wxBMP_8BPP_RED);
+      image.SaveFile(name + sStream.str() + ".bmp", wxBITMAP_TYPE_BMP);
+   }
 }
 ///
 //// </_no_comment_> ////
