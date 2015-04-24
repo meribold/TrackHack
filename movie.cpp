@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #define BOOST_FILESYSTEM_NO_DEPRECATED // Exclude deprecated features from headers.
 #include <boost/filesystem.hpp>
 
@@ -29,6 +31,12 @@ Movie::Movie(const std::string& dir, const std::string& regExString) :
                frames.push_back(std::move(Frame{this->dir, i->path().filename()}));
             }
          }
+         // On my Windows system, directory iteration was ordered, on my GNU/Linux system,
+         // it's not: make sure frames are sorted on systems other than Windows, too.
+         // _WIN32 is defined for both 32-bit and 64-bit environments.
+         #ifndef _WIN32
+           std::sort(frames.begin(), frames.end());
+         #endif
       }
    }
    catch (const filesystem_error&) {

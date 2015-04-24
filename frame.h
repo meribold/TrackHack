@@ -21,6 +21,8 @@ class Frame
    Frame& operator=(const Frame&) = delete;
    Frame& operator=(Frame&&);
 
+   friend bool operator<(const Frame&, const Frame&);
+
    std::string getFilename() const;
 
    // When several Trackee objects ask for the image at the same time they will point to
@@ -43,6 +45,10 @@ class Frame
 
 inline std::string Frame::getFilename() const {
    return filename.generic_string();
+}
+
+inline bool operator<(const Frame& lhs, const Frame& rhs) {
+   return lhs.filename < rhs.filename;
 }
 
 #endif //FRAME_H
