@@ -30,4 +30,4 @@ Allow capture in regex to extract indices from file name?
 
 Allow selecting and configuring tracking algorithms from the UI?
 
-vim: tw=80 spell
+<!--- vim: set tw=90 sw=3 et spell: -->
