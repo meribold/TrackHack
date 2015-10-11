@@ -19,4 +19,4 @@ should look something like this:
 
 ![Screenshot](https://www.dropbox.com/s/ufdf6d4655lh22h/TrackHackScreenshot.png?dl=1)
 
-<!--- vim: set tw=90 sw=3 et spell: -->
+<!--- vim: set tw=90 sts=4 sw=4 et spell: -->

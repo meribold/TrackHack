@@ -16,4 +16,4 @@ save button again).
 * Allow capture in regex to extract indices from file name?
 * Allow selecting and configuring tracking algorithms from the UI?
 
-<!--- vim: set tw=90 sw=3 et spell: -->
+<!--- vim: set tw=90 sts=4 sw=4 et spell: -->
