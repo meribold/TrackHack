@@ -1,4 +1,4 @@
-#include "bitmap.h"
+#include "bitmap.hpp"
 
 Bitmap::Bitmap(std::size_t width, std::size_t height) : width{width}, height{height}
 {

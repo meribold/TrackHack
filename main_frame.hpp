@@ -16,10 +16,10 @@
 #include <wx/thread.h>  // wxThreadHelper
 #include <wx/menu.h>
 
-#include "movie.h"
-#include "trackee.h"
-#include "tracker.h"
-#include "track_panel.h"
+#include "movie.hpp"
+#include "trackee.hpp"
+#include "tracker.hpp"
+#include "track_panel.hpp"
 
 class TrackeeBox;
 

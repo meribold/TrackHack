@@ -1,7 +1,7 @@
 #include <wx/image.h>
 
-#include "bitmap.h"
-#include "frame.h"
+#include "bitmap.hpp"
+#include "frame.hpp"
 
 Frame::Frame(Frame&& frame) : dir{frame.dir}, filename{std::move(frame.filename)} {}
 

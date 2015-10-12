@@ -15,8 +15,8 @@
 #include <wx/panel.h>
 #include <wx/pen.h>
 
-#include "color_pool.h"
-#include "track.h" // conrete type Track used by the back end to model trajectories
+#include "color_pool.hpp"
+#include "track.hpp" // conrete type Track used by the back end to model trajectories
 
 struct DrawingTools {
    DrawingTools(const wxPen& pen, const wxBrush& brush) : pen{pen}, brush{brush} {}

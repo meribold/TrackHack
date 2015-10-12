@@ -1,4 +1,4 @@
-#include "main_frame.h"
+#include "main_frame.hpp"
 
 #include <algorithm>  // lower_bound
 #include <array>
@@ -21,13 +21,13 @@
 #include <wx/rawbmp.h>
 #include <wx/stdpaths.h>    // wxStandardPaths
 
-#include "bitmap.h"
-#include "open_movie_wizard.h"
-#include "track_panel.h"
-#include "trackee_box.h"
+#include "bitmap.hpp"
+#include "open_movie_wizard.hpp"
+#include "track_panel.hpp"
+#include "trackee_box.hpp"
 
-#include "ibidi_export.h"
-#include "one_through_three.h"
+#include "ibidi_export.hpp"
+#include "one_through_three.hpp"
 
 // weakly typed enum because implicit conversion is convenient
 enum mainFrameId : unsigned { myID_TRACKEEBOX = wxID_HIGHEST, myID_LINKBOX, myID_TRACK,

@@ -24,7 +24,6 @@ GCC bug][1].  Test after upgrading GCC.
 * Allow capture in regex to extract indices from file name?
 
 #####Meta
-* Use `.hpp` as the filename extension for C++ header files
 * Use separate source directory
 * Add GIF movie to `README.md`
 

@@ -7,7 +7,7 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
-#include "bitmap.h"
+#include "bitmap.hpp"
 
 class Frame
 {

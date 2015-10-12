@@ -6,8 +6,8 @@
 #include <wx/bitmap.h>
 #include <wx/gdicmn.h> // wxPoint, wxRect
 
-#include "movie.h"
-#include "trackee.h"
+#include "movie.hpp"
+#include "trackee.hpp"
 
 void oneThroughThree(const wxBitmap&, const wxPoint&, const Movie*,
    const std::string* trackeeKey, const Trackee*);

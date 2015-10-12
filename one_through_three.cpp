@@ -13,7 +13,7 @@
 #include <wx/sizer.h>
 #include <wx/slider.h>
 
-#include "one_through_three.h"
+#include "one_through_three.hpp"
 
 class OneThroughThreeDialog : public wxDialog
 {

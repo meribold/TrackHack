@@ -13,7 +13,7 @@
 #define BOOST_THREAD_USE_LIB
 #include <boost/thread.hpp> // thread
 
-#include "frame.h"
+#include "frame.hpp"
 
 class Movie
 {

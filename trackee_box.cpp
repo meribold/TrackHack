@@ -9,7 +9,7 @@
 #include <wx/utils.h>   // wxOperatingSystemId wxGetOsVersion()
 #include <wx/valtext.h> // wxTextValidator
 
-#include "trackee_box.h"
+#include "trackee_box.hpp"
 
 class FilenameValidator : public wxTextValidator
 {

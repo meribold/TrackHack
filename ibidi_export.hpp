@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-#include "trackee.h"
+#include "trackee.hpp"
 
 void ibidiExport(const std::string&, const std::map<std::string, Trackee>&);
 

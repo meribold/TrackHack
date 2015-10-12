@@ -3,7 +3,7 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED // Exclude deprecated features from headers.
 #include <boost/filesystem.hpp>
 
-#include "movie.h"
+#include "movie.hpp"
 
 Movie::Movie(const std::string& dir, const std::string& regExString) :
    dir{new std::string{dir}}, frames{}, bitmapBuffer{}, terminateThread{false}

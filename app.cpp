@@ -2,7 +2,7 @@
 #include <wx/fileconf.h> // wxFileConfig
 #include <wx/log.h>      // ...
 
-#include "main_frame.h"
+#include "main_frame.hpp"
 
 class App : public wxApp
 {

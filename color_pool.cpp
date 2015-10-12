@@ -1,4 +1,4 @@
-#include "color_pool.h"
+#include "color_pool.hpp"
 
 #include <iostream>
 

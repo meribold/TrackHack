@@ -6,8 +6,8 @@
 #include <cstddef>   // size_t
 #include <memory>    // shared_ptr
 
-#include "movie.h"   // defines Frame
-#include "trackee.h"
+#include "movie.hpp"   // defines Frame
+#include "trackee.hpp"
 
 class Tracker
 {

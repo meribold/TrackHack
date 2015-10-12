@@ -13,7 +13,7 @@
 #include <wx/rawbmp.h>
 #include <wx/sizer.h>
 
-#include "track_panel.h"
+#include "track_panel.hpp"
 
 TrackPanel::TrackPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
    const wxSize& size) :

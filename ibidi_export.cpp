@@ -4,7 +4,7 @@
 
 #include <wx/msgdlg.h>
 
-#include "ibidi_export.h"
+#include "ibidi_export.hpp"
 
 void ibidiExport(const std::string& fileName,
    const std::map<std::string, Trackee>& trackees)

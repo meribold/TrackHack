@@ -1,4 +1,4 @@
-#include "open_movie_wizard.h"
+#include "open_movie_wizard.hpp"
 
 #include <string>
 
