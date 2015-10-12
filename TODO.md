@@ -24,7 +24,6 @@ GCC bug][1].  Test after upgrading GCC.
 * Allow capture in regex to extract indices from file name?
 
 #####Meta
-* Use separate source directory
 * Add GIF movie to `README.md`
 
 [1]: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65974
