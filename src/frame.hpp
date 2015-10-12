@@ -53,4 +53,4 @@ inline bool operator<(const Frame& lhs, const Frame& rhs) {
 
 #endif //FRAME_H
 
-// vim: tw=90 sw=3 et
+// vim: tw=90 sts=3 sw=3 et

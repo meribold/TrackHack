@@ -52,4 +52,4 @@ bool App::OnInit()
    return true;
 }
 
-// vim: tw=90 sw=3 et
+// vim: tw=90 sts=3 sw=3 et

@@ -71,4 +71,4 @@ inline std::size_t Movie::size() const {
 
 #endif //MOVIE_H
 
-// vim: tw=90 sw=3 et
+// vim: tw=90 sts=3 sw=3 et

@@ -14,4 +14,4 @@ void oneThroughThree(const wxBitmap&, const wxPoint&, const Movie*,
 
 #endif //ONE_THROUGH_THREE_H
 
-// vim: tw=90 sw=3 et
+// vim: tw=90 sts=3 sw=3 et

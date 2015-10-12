@@ -134,4 +134,4 @@ class TrackPanelEvent : public wxEvent
 
 #endif //TRACK_PANEL_H
 
-// vim: tw=90 sw=3 et
+// vim: tw=90 sts=3 sw=3 et

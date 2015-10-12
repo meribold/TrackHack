@@ -414,4 +414,4 @@ bool TrackPanel::AcceptsFocusFromKeyboard() const {
 wxDEFINE_EVENT(myEVT_TRACKPANEL_MARKED, TrackPanelEvent);
 wxDEFINE_EVENT(myEVT_TRACKPANEL_SAVE, wxCommandEvent);
 
-// vim: tw=90 sw=3 et
+// vim: tw=90 sts=3 sw=3 et

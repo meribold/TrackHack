@@ -75,4 +75,4 @@ const ColorPool::Color& ColorPool::getColor()
 
 //ColorPool colorPool;
 
-// vim: tw=92 sw=3 et
+// vim: tw=90 sts=3 sw=3 et

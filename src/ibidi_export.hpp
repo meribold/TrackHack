@@ -10,4 +10,4 @@ void ibidiExport(const std::string&, const std::map<std::string, Trackee>&);
 
 #endif //IBIDI_EXPORT_H
 
-// vim: tw=90 sw=3 et
+// vim: tw=90 sts=3 sw=3 et
