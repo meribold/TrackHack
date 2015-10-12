@@ -31,10 +31,10 @@ LDLIBS   :=
 DEBUG ?= 0
 ifeq ($(DEBUG), 0)
    CXXFLAGS := -O3 -flto -fuse-linker-plugin $(CXXFLAGS)
-   OBJDIR := build/release
+   OBJDIR := ../build/release
 else
    CXXFLAGS := -DDEBUG -g $(CXXFLAGS)
-   OBJDIR := build/debug
+   OBJDIR := ../build/debug
 endif
 # stackoverflow.com/questions/1079832/how-can-i-configure-my-makefile-for-debug-and-releas
 # stackoverflow.com/questions/792217/simple-makefile-with-release-and-debug-builds-best-pr
