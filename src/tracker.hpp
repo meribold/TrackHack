@@ -189,7 +189,7 @@ inline int Tracker::niceness(const Point& point, unsigned char intensity,
 
    // When sqaredDistance approaches squaredDistanceCap a full proximityBonus is given and
    // a pitch-black pixel can be as good as a white one and vice versa; if squaredDistance
-   // is higher then squaredDistanceCap the user should reconsider the speed cap.
+   // is higher than squaredDistanceCap the user should reconsider the speed cap.
    int proximityBonus =
       255. * gainedDistance / speedCap * squaredDistance / squaredDistanceCap;
 
