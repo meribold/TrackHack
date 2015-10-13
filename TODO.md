@@ -13,6 +13,8 @@ GCC bug][1].  Test after upgrading GCC.
 * Sort left list box?
 * Use `wxRichTextStyleListBox` and `wxRichTextCtrl`; no identifiers on `TrackPanel`?
 * Can we draw bitmaps faster?  Draw to device context?  Use `wxGraphicsBitmap`?
+* Reposition the list boxes depending on whether more free space is available at the
+  bottom and top or left and right of the `TrackPanel`?
 
 #####Features
 * Make trackee speed caps changeable from the UI
