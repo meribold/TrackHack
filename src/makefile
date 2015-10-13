@@ -64,7 +64,7 @@ endif
 all: $(program)
 
 ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
-   # Include existant dependency files.
+   # Include existent dependency files.
    include $(filter $(depends),$(shell find $(OBJDIR) -regex '.*\.d'))
 endif
 
