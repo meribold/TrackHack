@@ -65,7 +65,7 @@ all: $(program)
 
 ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
    # Include existant dependency files.
-   include $(filter $(depends),$(shell find -regex '.*\.d' -printf '%P\n'))
+   include $(filter $(depends),$(shell find $(OBJDIR) -regex '.*\.d'))
 endif
 
 # https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
