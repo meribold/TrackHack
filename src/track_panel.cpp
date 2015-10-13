@@ -312,8 +312,19 @@ void TrackPanel::onLeftUp(wxMouseEvent&)
    if (rect.width == 0) rect.width = 1;
    if (rect.height == 0) rect.height = 1;
 
+   int centerX = rect.GetX() + rect.GetWidth() / 2;
+   int centerY = rect.GetY() + rect.GetHeight() / 2;
+
+   // It's squared but that's okay.
+   auto distanceFromCenter = [&](int x, int y) {
+      int xOffset = x - centerX;
+      int yOffset = y - centerY;
+      return xOffset * xOffset + yOffset * yOffset;
+   };
+
    unsigned char intensity = 0;
    wxPoint intensityPeak = rect.GetTopLeft();
+   int distance = distanceFromCenter(intensityPeak.x, intensityPeak.y);
 
    wxNativePixelData pixelData{bitmap};
    wxNativePixelData::Iterator iterator{pixelData};
@@ -323,9 +334,12 @@ void TrackPanel::onLeftUp(wxMouseEvent&)
       iterator.MoveTo(pixelData, rect.GetLeft(), row);
       for (int column = rect.GetLeft(); column < rect.x + rect.width; ++column)
       {
-         if (intensity < iterator.Red()) {
+         if (intensity < iterator.Red() || (intensity == iterator.Red() &&
+                                            distanceFromCenter(column, row) < distance))
+         {
             intensity = iterator.Red();
             intensityPeak.x = column; intensityPeak.y = row;
+            distance = distanceFromCenter(column, row);
          }
          ++iterator;
       }
