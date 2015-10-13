@@ -152,7 +152,7 @@ void createBitmaps(std::string name)
                {
                   int pixelNum = (SCALE_FACTOR * SCALE_FACTOR * 24 * (23 - rowNum) +
                      SCALE_FACTOR * colNum + 24 * SCALE_FACTOR * i) / 8 + j;
-                  pixelArray[pixelNum] = set ? 0xff : 0x00;
+                  pixelArray[pixelNum] = set ? 0x00 : 0xff;
                }
             }
          }
