@@ -6,6 +6,8 @@
 #####Issues
 * Don't use `-Wno-deprecated-declarations`.  The warnings I get might be caused by [this
 GCC bug][1].  Test after upgrading GCC.
+* Don't use `-Wno-old-style-cast`.  Maybe there's a way to suppress warnings caused by
+  library headers.
 * Don't start boxing when closing context menu with left click
 
 #####Enhancements
