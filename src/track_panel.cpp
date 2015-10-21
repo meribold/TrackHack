@@ -58,6 +58,7 @@ void TrackPanel::reset()
       colorPool.returnColor(drawingTools.color);
    }
    trackVisualsMap.clear();
+   useDrawingToolsOf();
    focusIndex(0);
 }
 
