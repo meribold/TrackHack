@@ -29,6 +29,8 @@ GCC bug][1].  Test after upgrading GCC.
 
 #####Meta
 * Add GIF movie to `README.md`
+* Add information such as the compilation date and options and the SHA-1 of the latest
+  commit to the About Dialog.
 
 [1]: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65974
 
