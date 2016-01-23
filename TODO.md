@@ -1,36 +1,36 @@
 #####Bugs
-* There's a bug when tracking with no trackees
-* It doesn't object to loading files that don't look like bitmaps (based on extension) and
-  crashes when failing to display them
+*   There's a bug when tracking with no trackees
+*   It doesn't object to loading files that don't look like bitmaps (based on extension)
+    and crashes when failing to display them
 
 #####Issues
-* Don't use `-Wno-deprecated-declarations`.  The warnings I get might be caused by [this
-GCC bug][1].  Test after upgrading GCC.
-* Don't use `-Wno-old-style-cast`.  Maybe there's a way to suppress warnings caused by
-  library headers.
-* Don't start boxing when closing context menu with left click
+*   Don't use `-Wno-deprecated-declarations`.  The warnings I get might be caused by [this
+    GCC bug][1].  Test after upgrading GCC.
+*   Don't use `-Wno-old-style-cast`.  Maybe there's a way to suppress warnings caused by
+    library headers.
+*   Don't start boxing when closing context menu with left click
 
 #####Enhancements
-* Cancel boxing with right click
-* Sort left list box?
-* Use `wxRichTextStyleListBox` and `wxRichTextCtrl`; no identifiers on `TrackPanel`?
-* Can we draw bitmaps faster?  Draw to device context?  Use `wxGraphicsBitmap`?
-* Reposition the list boxes depending on whether more free space is available at the
-  bottom and top or left and right of the `TrackPanel`?
+*   Cancel boxing with right click
+*   Sort left list box?
+*   Use `wxRichTextStyleListBox` and `wxRichTextCtrl`; no identifiers on `TrackPanel`?
+*   Can we draw bitmaps faster?  Draw to device context?  Use `wxGraphicsBitmap`?
+*   Reposition the list boxes depending on whether more free space is available at the
+    bottom and top or left and right of the `TrackPanel`?
 
 #####Features
-* Make trackee speed caps changeable from the UI
-* Allow selecting and configuring tracking algorithms from the UI?
-* "Play" button
-* Load existing tracks with movie.  Requires saving which positions were user-supplied.
-  It's probably best to save everything in a new file and not to auto-save (and create a
-  save button again).
-* Allow capture in regex to extract indices from file name?
+*   Make trackee speed caps changeable from the UI
+*   Allow selecting and configuring tracking algorithms from the UI?
+*   "Play" button
+*   Load existing tracks with movie.  Requires saving which positions were user-supplied.
+    It's probably best to save everything in a new file and not to auto-save (and create a
+    save button again).
+*   Allow capture in regex to extract indices from file name?
 
 #####Meta
-* Add GIF movie to `README.md`
-* Add information such as the compilation date and options and the SHA-1 of the latest
-  commit to the About Dialog.
+*   Add GIF movie to `README.md`
+*   Add information such as the compilation date and options and the SHA-1 of the latest
+    commit to the About Dialog.
 
 [1]: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65974
 
