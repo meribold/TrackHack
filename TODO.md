@@ -1,17 +1,17 @@
 #####Bugs
-*   There's a bug when tracking with no trackees
+*   There's a bug when tracking with no trackees.
 *   It doesn't object to loading files that don't look like bitmaps (based on extension)
-    and crashes when failing to display them
+    and crashes when failing to display them.
 
 #####Issues
 *   Don't use `-Wno-deprecated-declarations`.  The warnings I get might be caused by [this
     GCC bug][1].  Test after upgrading GCC.
 *   Don't use `-Wno-old-style-cast`.  Maybe there's a way to suppress warnings caused by
     library headers.
-*   Don't start boxing when closing context menu with left click
+*   Don't start boxing when closing the context menu by left-clicking.
 
 #####Enhancements
-*   Cancel boxing with right click
+*   Cancel boxing with right click.
 *   Sort left list box?
 *   Use `wxRichTextStyleListBox` and `wxRichTextCtrl`; no identifiers on `TrackPanel`?
 *   Can we draw bitmaps faster?  Draw to device context?  Use `wxGraphicsBitmap`?
@@ -21,9 +21,9 @@
 *   Create an installer for Windows?
 
 #####Features
-*   Make trackee speed caps changeable from the UI
+*   Make trackee speed caps changeable from the UI.
 *   Allow selecting and configuring tracking algorithms from the UI?
-*   "Play" button
+*   Add *Play* button.
 *   Load existing tracks with movie.  Requires saving which positions were user-supplied.
     It's probably best to save everything in a new file and not to auto-save (and create a
     save button again).
