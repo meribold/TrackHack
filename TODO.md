@@ -18,6 +18,7 @@
 *   Reposition the list boxes depending on whether more free space is available at the
     bottom and top or left and right of the `TrackPanel`?
 *   Use static linking for Windows builds?
+*   Create an installer for Windows?
 
 #####Features
 *   Make trackee speed caps changeable from the UI
