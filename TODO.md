@@ -17,6 +17,7 @@
 *   Can we draw bitmaps faster?  Draw to device context?  Use `wxGraphicsBitmap`?
 *   Reposition the list boxes depending on whether more free space is available at the
     bottom and top or left and right of the `TrackPanel`?
+*   Use static linking for Windows builds?
 
 #####Features
 *   Make trackee speed caps changeable from the UI
