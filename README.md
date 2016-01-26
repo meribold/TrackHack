@@ -18,9 +18,9 @@ should look something like this:
 -->
 
 #### GNU/Linux Screenshot
-![Screenshot](https://www.dropbox.com/s/yf1xvey20yyc3bb/track-hack-screenshot.png?dl=1)
+![Screenshot](https://www.dropbox.com/s/034xgpzxozqk8kz/track-hack-screenshot-arch.png?dl=1)
 
 #### Windows Screenshot
-![Screenshot](https://www.dropbox.com/s/ufdf6d4655lh22h/TrackHackScreenshot.png?dl=1)
+![Screenshot](https://www.dropbox.com/s/6cf76dneg1dgt5n/track-hack-screenshot-windows-7.png?dl=1)
 
 <!--- vim: set tw=90 sts=4 sw=4 et spell: -->
