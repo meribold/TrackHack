@@ -17,10 +17,10 @@ libraries
 should look something like this:
 -->
 
-####GNU/Linux Screenshot
+#### GNU/Linux Screenshot
 ![Screenshot](https://www.dropbox.com/s/yf1xvey20yyc3bb/track-hack-screenshot.png?dl=1)
 
-####Windows Screenshot
+#### Windows Screenshot
 ![Screenshot](https://www.dropbox.com/s/ufdf6d4655lh22h/TrackHackScreenshot.png?dl=1)
 
 <!--- vim: set tw=90 sts=4 sw=4 et spell: -->

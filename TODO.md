@@ -1,16 +1,16 @@
-#####Bugs
+##### Bugs
 *   There's a bug when tracking with no trackees.
 *   It doesn't object to loading files that don't look like bitmaps (based on extension)
     and crashes when failing to display them.
 
-#####Issues
+##### Issues
 *   Don't use `-Wno-deprecated-declarations`.  The warnings I get might be caused by [this
     GCC bug][1].  Test after upgrading GCC.
 *   Don't use `-Wno-old-style-cast`.  Maybe there's a way to suppress warnings caused by
     library headers.
 *   Don't start boxing when closing the context menu by left-clicking.
 
-#####Enhancements
+##### Enhancements
 *   Cancel boxing with right click.
 *   Sort left list box?
 *   Use `wxRichTextStyleListBox` and `wxRichTextCtrl`; no identifiers on `TrackPanel`?
@@ -20,7 +20,7 @@
 *   Use static linking for Windows builds?
 *   Create an installer for Windows?
 
-#####Features
+##### Features
 *   Make trackee speed caps changeable from the UI.
 *   Allow selecting and configuring tracking algorithms from the UI?
 *   Add *Play* button.
@@ -29,7 +29,7 @@
     save button again).
 *   Allow capture in regex to extract indices from file name?
 
-#####Meta
+##### Meta
 *   Add GIF movie to `README.md`
 *   Add information such as the compilation date and options and the SHA-1 of the latest
     commit to the About Dialog.
