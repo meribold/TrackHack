@@ -76,6 +76,7 @@ class MainFrame : public wxFrame, public wxThreadHelper
    void onClose(wxCloseEvent&); // process a wxEVT_CLOSE_WINDOW
 
    void addTrackee(std::string);
+   void deleteTrackee(const std::string&);
    void saveImage();
 
    wxMenuBar* menuBar;

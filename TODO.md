@@ -1,5 +1,4 @@
 ##### Bugs
-*   There's a bug when tracking with no trackees.
 *   It doesn't object to loading files that don't look like bitmaps (based on extension)
     and crashes when failing to display them.
 

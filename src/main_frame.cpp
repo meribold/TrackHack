@@ -88,6 +88,7 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    fileMenu->Append(wxID_EXIT, "&Quit\tCtrl+Q");
 
    editMenu->Append(myID_TRACK, "&Track\tCtrl+T");
+   editMenu->Enable(myID_TRACK, false);
    editMenu->AppendSeparator();
    editMenu->Append(myID_DELETE_TRACKEE, "&Delete trackee\tCtrl+D");
    editMenu->Enable(myID_DELETE_TRACKEE, false);
@@ -257,26 +258,13 @@ void MainFrame::onTrackeeBoxSelected(wxCommandEvent& event)
    // No event.Skip() necessary.
 }
 
-// Called when the TrackeeBox informs us that a trackee should be deleted. TODO: move
-// common code from this and onDeleteTrackee() to new function.
+// Called when the TrackeeBox informs us that a trackee should be deleted.
 void MainFrame::onTrackeeBoxDeleted(wxCommandEvent& event)
 {
    std::string key = event.GetString().ToStdString();
+   assert(!key.empty());
 
-   trackees.erase(key);
-   marks.erase(key);
-
-   trackPanel->eraseTrack(key);
-
-   if (trackeeBox->getStringSelection().empty()) {
-      GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
-      GetMenuBar()->Enable(myID_REMOVE_LINK, false);
-      markBox->Clear();
-      markBox->Hide();
-      trackPanel->useDrawingToolsOf();
-   }
-   topPanel->Layout();
-   trackPanel->Refresh(false);
+   deleteTrackee(key);
 }
 
 void MainFrame::onMarkBoxSelected(wxCommandEvent& event)
@@ -325,6 +313,7 @@ void MainFrame::onTrackPanelMarked(TrackPanelEvent& event)
          // insert before iterator, invalidating all previously obtained iterators,
          // references and pointers
          iterator = marks.insert(iterator, movieSlider->GetValue());
+         GetMenuBar()->Enable(myID_TRACK, true);
       }
 
       // Define which part of the track need be computed anew by assigning {-1, -1} to all
@@ -427,6 +416,7 @@ void MainFrame::onOpen(wxCommandEvent&)
       {
          movie = std::move(newMovie);
 
+         GetMenuBar()->Enable(myID_TRACK, false);
          GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
          GetMenuBar()->Enable(myID_REMOVE_LINK, false);
          trackeeBox->reset();
@@ -460,6 +450,8 @@ void MainFrame::onSaveImage(wxCommandEvent&)
 
 void MainFrame::onTrack(wxCommandEvent&)
 {
+   assert (!trackees.empty());
+
    if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR) {
       return;
    }
@@ -475,30 +467,14 @@ void MainFrame::onTrack(wxCommandEvent&)
    GetMenuBar()->Enable(myID_REMOVE_LINK, false);
 }
 
-// Called when we want to delete a trackee. TODO: move common code from this and
-// onTrackeeBoxDeleted() to new function.
+// Called when we want to delete a trackee.
 void MainFrame::onDeleteTrackee(wxCommandEvent&)
 {
    std::string key = trackeeBox->getStringSelection().ToStdString();
    assert(!key.empty());
 
-   std::size_t erasedElements = trackees.erase(key);
-   assert(erasedElements == 1);
-
-   marks.erase(key);
-
    trackeeBox->deleteSelection();
-   trackPanel->eraseTrack(key);
-
-   if (trackeeBox->getStringSelection().empty()) {
-      GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
-      GetMenuBar()->Enable(myID_REMOVE_LINK, false);
-      markBox->Clear();
-      markBox->Hide();
-      trackPanel->useDrawingToolsOf();
-   }
-   topPanel->Layout();
-   trackPanel->Refresh(false);
+   deleteTrackee(key);
 }
 
 // Somewhat similar to code in MainFrame::onTrackPanelMarked().
@@ -596,7 +572,7 @@ void MainFrame::onOneThroughThree(wxCommandEvent&)
  */
 void MainFrame::onTrackingCompleted(wxThreadEvent&)
 {
-   if (trackees.empty()) return;
+   assert (!trackees.empty());
 
    {
       std::ofstream oStream{movie->getDir() + "all_tracks.txt"}; // RAII
@@ -699,6 +675,31 @@ void MainFrame::addTrackee(std::string key)
    }
 
    GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+}
+
+void MainFrame::deleteTrackee(const std::string& key)
+{
+   assert (!key.empty());
+
+   std::size_t erasedElements = trackees.erase(key);
+   assert(erasedElements == 1);
+   if (trackees.empty()) {
+      GetMenuBar()->Enable(myID_TRACK, false);
+   }
+
+   marks.erase(key);
+
+   trackPanel->eraseTrack(key);
+
+   if (trackeeBox->getStringSelection().empty()) {
+      GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
+      GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+      markBox->Clear();
+      markBox->Hide();
+      trackPanel->useDrawingToolsOf();
+   }
+   topPanel->Layout();
+   trackPanel->Refresh(false);
 }
 
 void MainFrame::saveImage()
