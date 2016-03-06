@@ -9,14 +9,14 @@
 #include <string>
 
 #include <wx/aboutdlg.h>    // wxAboutBox()
+#include <wx/dcmemory.h>    // wxMemoryDC
 #include <wx/filehistory.h> // wxFileHistory
 #include <wx/filename.h>    // wxFileName
-#include <wx/dcmemory.h>    // wxMemoryDC
 #include <wx/rawbmp.h>
 #include <wx/stdpaths.h>    // wxStandardPaths
 
-#include "create_bitmaps.hpp"
 #include "bitmap.hpp"
+#include "create_bitmaps.hpp"
 #include "open_movie_wizard.hpp"
 #include "track_panel.hpp"
 #include "trackee_box.hpp"
@@ -351,7 +351,7 @@ void MainFrame::onTrackPanelMarked(TrackPanelEvent& event)
             topPanel->Layout();
          }
       }
-      trackPanel->Refresh(false); // TODO: is this unneeded on Windows? Why?
+      trackPanel->Refresh(false); // TODO: is this unneeded on Windows?  Why?
    }
    // Don't Skip() the event.
 }

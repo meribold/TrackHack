@@ -10,16 +10,16 @@
 #include <wx/bitmap.h>  // wxBitmap
 #include <wx/frame.h>
 #include <wx/listbox.h>
-#include <wx/panel.h>
-#include <wx/slider.h>
-#include <wx/sizer.h>
-#include <wx/thread.h>  // wxThreadHelper
 #include <wx/menu.h>
+#include <wx/panel.h>
+#include <wx/sizer.h>
+#include <wx/slider.h>
+#include <wx/thread.h>  // wxThreadHelper
 
 #include "movie.hpp"
+#include "track_panel.hpp"
 #include "trackee.hpp"
 #include "tracker.hpp"
-#include "track_panel.hpp"
 
 class TrackeeBox;
 
@@ -31,7 +31,7 @@ class MainFrame : public wxFrame, public wxThreadHelper
 
    MainFrame(const wxPoint& = wxDefaultPosition, const wxSize& = wxDefaultSize);
 
-   virtual wxThread::ExitCode Entry(); // override; purely virtual in wxThreadHelper
+   virtual wxThread::ExitCode Entry() override;
 
    private:
 
