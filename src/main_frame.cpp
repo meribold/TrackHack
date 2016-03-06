@@ -463,6 +463,7 @@ void MainFrame::onTrack(wxCommandEvent&)
    trackeeBox->Disable();
    trackPanel->Disable();
 
+   GetMenuBar()->Enable(myID_TRACK, false);
    GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
    GetMenuBar()->Enable(myID_REMOVE_LINK, false);
 }
@@ -619,6 +620,7 @@ void MainFrame::onTrackingCompleted(wxThreadEvent&)
    trackeeBox->Enable();
    trackPanel->Enable();
 
+   GetMenuBar()->Enable(myID_TRACK, true);
    if (!trackeeBox->getStringSelection().empty()) {
       GetMenuBar()->Enable(myID_DELETE_TRACKEE, true);
    }
