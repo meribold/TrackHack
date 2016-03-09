@@ -15,6 +15,7 @@
 #include <wx/sizer.h>
 #include <wx/slider.h>
 #include <wx/thread.h>  // wxThreadHelper
+#include <wx/timer.h>
 
 #include "movie.hpp"
 #include "track_panel.hpp"
@@ -75,6 +76,8 @@ class MainFrame : public wxFrame, public wxThreadHelper
 
    void onClose(wxCloseEvent&); // process a wxEVT_CLOSE_WINDOW
 
+   void onTimer(wxTimerEvent&);
+
    void addTrackee(std::string);
    void deleteTrackee(const std::string&);
    void saveImage();
@@ -95,6 +98,8 @@ class MainFrame : public wxFrame, public wxThreadHelper
    wxListBox* markBox;
    TrackPanel* trackPanel;
    wxSlider* movieSlider;
+
+   wxTimer panelUpdateTimer;
 
    // a map of vectors holding all the marks provided for a particular trackee
    std::map<std::string, std::vector<std::size_t>> marks;

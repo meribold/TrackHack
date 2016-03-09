@@ -46,6 +46,7 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    trackPanel{new TrackPanel{topPanel}},
    movieSlider{new wxSlider{topPanel, wxID_ANY, 0, 0, 2, wxDefaultPosition, wxDefaultSize,
       wxSL_LABELS}},
+   panelUpdateTimer{this},
    marks{}, movie{}, tracker{}, trackees{}
 {
    {
@@ -166,6 +167,8 @@ MainFrame::MainFrame(const wxPoint& pos, const wxSize& size) :
    Bind(myEVT_TRACKING_COMPLETED, &MainFrame::onTrackingCompleted, this, wxID_ANY);
 
    Bind(wxEVT_CLOSE_WINDOW, &MainFrame::onClose, this);
+
+   Bind(wxEVT_TIMER, &MainFrame::onTimer, this);
    ///
    //// </_event_handler_mappings_> ////
 }
@@ -466,6 +469,9 @@ void MainFrame::onTrack(wxCommandEvent&)
    GetMenuBar()->Enable(myID_TRACK, false);
    GetMenuBar()->Enable(myID_DELETE_TRACKEE, false);
    GetMenuBar()->Enable(myID_REMOVE_LINK, false);
+
+   // Call onTimer() every 500 milliseconds to refresh the TrackPanel.
+   panelUpdateTimer.Start(500);
 }
 
 // Called when we want to delete a trackee.
@@ -575,6 +581,8 @@ void MainFrame::onTrackingCompleted(wxThreadEvent&)
 {
    assert (!trackees.empty());
 
+   panelUpdateTimer.Stop();
+
    {
       std::ofstream oStream{movie->getDir() + "all_tracks.txt"}; // RAII
 
@@ -639,6 +647,11 @@ void MainFrame::onClose(wxCloseEvent& event)
    }
 
    event.Skip(); // The default handler will call this->Destroy().
+}
+
+void MainFrame::onTimer(wxTimerEvent&)
+{
+   trackPanel->Refresh(false);
 }
 ///
 //// </_event_handler_definitions> ////
