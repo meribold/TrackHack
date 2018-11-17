@@ -219,10 +219,10 @@ void TrackeeBox::suggestId()
             indices.push_back(unsigned(index));
          }
       }
-      catch (std::invalid_argument) {
+      catch (const std::invalid_argument&) {
 
       }
-      catch (std::out_of_range) {
+      catch (const std::out_of_range&) {
 
       }
    }

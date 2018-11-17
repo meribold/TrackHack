@@ -21,11 +21,11 @@ void ibidiExport(const std::string& fileName,
       try {
          index = std::stoi(trackeeID);
       }
-      catch (std::invalid_argument) {
+      catch (const std::invalid_argument&) {
          badTrackees += trackeeID + ", ";
          continue;
       }
-      catch (std::out_of_range) {
+      catch (const std::out_of_range&) {
          badTrackees += trackeeID + ", ";
          continue;
       }
