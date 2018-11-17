@@ -10,7 +10,6 @@ MAKEFLAGS += --no-builtin-rules
 
 CXX      := g++
 UNAME    := $(shell uname)
-WXCONFIG := wx-config
 IDIRS    :=
 CXXFLAGS := -Wall -Wextra -Wno-old-style-cast -Wno-deprecated-declarations -pedantic
 CPPFLAGS :=
@@ -35,10 +34,10 @@ sources := $(wildcard *.cpp)
 objects := $(addprefix $(OBJDIR)/,$(sources:.cpp=.o))
 depends := $(addprefix $(OBJDIR)/,$(sources:.cpp=.d))
 
-CXXFLAGS := $$($(WXCONFIG) --cxxflags) -std=c++14 $(CXXFLAGS) $(addprefix -I, $(IDIRS))
-CPPFLAGS := $$($(WXCONFIG) --cppflags) $(CPPFLAGS)
+CXXFLAGS := $$(wx-config --cxxflags) -std=c++14 $(CXXFLAGS) $(addprefix -I, $(IDIRS))
+CPPFLAGS := $$(wx-config --cppflags) $(CPPFLAGS)
 LDFLAGS  += $(addprefix -L, $(LDDIRS))
-LDLIBS   += $$($(WXCONFIG) --libs)
+LDLIBS   += $$(wx-config --libs)
 
 ifeq ($(UNAME), Linux)
    LDLIBS += -lboost_thread -lboost_regex -lboost_filesystem -lboost_system
