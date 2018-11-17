@@ -8,9 +8,6 @@ SHELL := /bin/sh
 # [2], [3], [4], and [5].
 MAKEFLAGS += --no-builtin-rules
 
-# Clear the suffix list.  See section 7.2.1 of the GNU Coding Standards [1].
-.SUFFIXES:
-
 CXX      := g++
 UNAME    := $(shell uname)
 WXCONFIG := wx-config
