@@ -34,8 +34,9 @@ sources := $(wildcard *.cpp)
 objects := $(addprefix $(OBJDIR)/,$(sources:.cpp=.o))
 depends := $(addprefix $(OBJDIR)/,$(sources:.cpp=.d))
 
-CXXFLAGS := $(shell wx-config --cxxflags) -std=c++14 $(CXXFLAGS) $(addprefix -I, $(IDIRS))
-CPPFLAGS := $(shell wx-config --cppflags) $(CPPFLAGS)
+CXXFLAGS := $(shell wx-config --cxxflags | sed 's/-I/-isystem/g') -std=c++14 $(CXXFLAGS) \
+            $(addprefix -I, $(IDIRS))
+CPPFLAGS := $(shell wx-config --cppflags | sed 's/-I/-isystem/g') $(CPPFLAGS)
 LDFLAGS  += $(addprefix -L, $(LDDIRS))
 LDLIBS   += $(shell wx-config --libs)
 
