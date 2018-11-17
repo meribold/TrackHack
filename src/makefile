@@ -1,19 +1,15 @@
-# "Every Makefile should contain this line" - GNU Coding Standards, section 7.2.1
+# "Every Makefile should contain this line".  See section 7.2.1 of the GNU Coding
+# Standards [1].
 SHELL := /bin/sh
 
-# There seems to be a built-in rule that matches track_hack.rc which is not cancelled by
+# There seems to be a built-in rule that matches `track_hack.rc` which is not canceled by
 # clearing the suffix list and causes a circular dependency (make: Circular track_hack.rc
-# <- track_hack.rc.o dependency dropped). This should disable all built-in rules.
-# stackoverflow.com/questions/4122831/disable-make-builtin-rules-and-variables-from-inside
-# gnu.org/software/make/manual/html_node/Canceling-Rules.html
-# gnu.org/software/make/manual/html_node/Suffix-Rules.html
-# gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html#Catalogue-of-Rules
+# <- track_hack.rc.o dependency dropped).  This should disable all built-in rules.  See
+# [2], [3], [4], and [5].
 MAKEFLAGS += --no-builtin-rules
 
-# Clear the suffix list. See section 7.2.1 of the GNU Coding Standards.
+# Clear the suffix list.  See section 7.2.1 of the GNU Coding Standards [1].
 .SUFFIXES:
-
-# gnu.org/prep/standards/html_node/Makefile-Basics.html
 
 CXX      := g++
 UNAME    := $(shell uname)
@@ -27,7 +23,7 @@ LDLIBS   :=
 
 ##########################################################################################
 
-# Default is release build so users can do a normal make.
+# Create a release build by default so users can simply run `make`.  See [6] and [7].
 DEBUG ?= 0
 ifeq ($(DEBUG), 0)
    CXXFLAGS := -O3 -flto -fuse-linker-plugin $(CXXFLAGS)
@@ -36,8 +32,6 @@ else
    CXXFLAGS := -DDEBUG -g $(CXXFLAGS)
    OBJDIR := ../build/debug
 endif
-# stackoverflow.com/questions/1079832/how-can-i-configure-my-makefile-for-debug-and-releas
-# stackoverflow.com/questions/792217/simple-makefile-with-release-and-debug-builds-best-pr
 
 program := $(addprefix $(OBJDIR)/,track_hack)
 sources := $(wildcard *.cpp)
@@ -63,26 +57,24 @@ endif
 
 all: $(program)
 
-ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),) # Any real goals?
-   # Include existent dependency files.
+ifneq ($(filter-out clean,$(or $(MAKECMDGOALS),all)),)  # Any real goals?
+   # Include existing dependency files.
    include $(filter $(depends),$(shell find $(OBJDIR) -regex '.*\.d'))
 endif
 
-# https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
+# See [8].
 $(OBJDIR)/%.o: $(OBJDIR)/%.d | $(OBJDIR)
 	$(CXX) -MMD $(CXXFLAGS) $(CPPFLAGS) $*.cpp -c -o $@
 
 $(OBJDIR):
 	mkdir -p $@
 
-# Running 'make -p' in a directory with no makefile yields the full list of default rules
-# and variables.
-# https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
+# Running `make -p` in a directory with no makefile yields the full list of default rules
+# and variables.  See [8].
 $(program): $(objects) $(rcfile:%=%.o) | $(OBJDIR)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $+ $(LDLIBS) -o $@
 
-# See make.mad-scientist.net/papers/advanced-auto-dependency-generation: Avoiding "No rule
-# to make target ..." Errors. This is a more simple approach to solve the same problem.
+# See [9].  This is a more simple approach to solve the same problem.
 %.h: ;
 %.H: ;
 %.hh: ;
@@ -97,8 +89,17 @@ $(rcfile:%=%.o): $(rcfile)
 
 # If one of these targets (dependency files) doesn't exist, Make will imagine it to have
 # been updated when this rule is run and will also rebuilt the object file corresponding
-# to the dependency file. The dependency file itself will be created along with the object
-# file and included during the next invocation of Make.
+# to the dependency file.  The dependency file itself will be created along with the
+# object file and included during the next invocation of Make.
 $(depends):
 
-# vim: tw=90 ts=8 sts=3 sw=3 noet
+# [1]: https://www.gnu.org/prep/standards/standards.html#Makefile-Conventions
+# [2]: https://stackoverflow.com/q/4122831
+# [3]: https://gnu.org/software/make/manual/html_node/Canceling-Rules.html
+# [4]: https://gnu.org/software/make/manual/html_node/Suffix-Rules.html
+# [5]: https://gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html#Catalogue-of-Rules
+#      "Catalogue of Built-In Rules - section 10.2 of the GNU Make Manual"
+# [6]: https://stackoverflow.com/q/1079832
+# [7]: https://stackoverflow.com/q/792217
+# [8]: https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html
+# [9]: https://make.mad-scientist.net/papers/advanced-auto-dependency-generation/#norule
