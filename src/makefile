@@ -11,7 +11,7 @@ SHELL := /bin/sh
 MAKEFLAGS += --no-builtin-rules
 
 # Clear the suffix list. See section 7.2.1 of the GNU Coding Standards.
-.SUFFICES:
+.SUFFIXES:
 
 # gnu.org/prep/standards/html_node/Makefile-Basics.html
 
