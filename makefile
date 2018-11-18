@@ -23,16 +23,16 @@ LDLIBS   :=
 DEBUG ?= 0
 ifeq ($(DEBUG), 0)
    CXXFLAGS := -O3 -flto -fuse-linker-plugin $(CXXFLAGS)
-   OBJDIR := ../build/release
+   OBJDIR := build/release
 else
    CXXFLAGS := -DDEBUG -g $(CXXFLAGS)
-   OBJDIR := ../build/debug
+   OBJDIR := build/debug
 endif
 
 program := $(addprefix $(OBJDIR)/,track_hack)
-sources := $(wildcard *.cpp)
-objects := $(addprefix $(OBJDIR)/,$(sources:.cpp=.o))
-depends := $(addprefix $(OBJDIR)/,$(sources:.cpp=.d))
+sources := $(wildcard src/*.cpp)
+objects := $(addprefix $(OBJDIR)/,$(notdir $(sources:.cpp=.o)))
+depends := $(addprefix $(OBJDIR)/,$(notdir $(sources:.cpp=.d)))
 
 CXXFLAGS := $(shell wx-config --cxxflags | sed 's/-I/-isystem/g') -std=c++14 $(CXXFLAGS) \
             $(addprefix -I, $(IDIRS))
@@ -61,7 +61,7 @@ endif
 
 # See [8].
 $(OBJDIR)/%.o: $(OBJDIR)/%.d | $(OBJDIR)
-	$(CXX) -MMD $(CXXFLAGS) $(CPPFLAGS) $*.cpp -c -o $@
+	$(CXX) -MMD $(CXXFLAGS) $(CPPFLAGS) src/$*.cpp -c -o $@
 
 $(OBJDIR):
 	mkdir -p $@
