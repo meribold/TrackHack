@@ -272,5 +272,3 @@ wxObject* FilenameValidator::Clone() const
 
 wxDEFINE_EVENT(myEVT_COMMAND_TRACKEEBOX_ADDED, wxCommandEvent);
 wxDEFINE_EVENT(myEVT_COMMAND_TRACKEEBOX_DELETED, wxCommandEvent);
-
-// vim: tw=90 sts=3 sw=3 et

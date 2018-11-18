@@ -13,5 +13,3 @@ void oneThroughThree(const wxBitmap&, const wxPoint&, const Movie*,
    const std::string* trackeeKey, const Trackee*);
 
 #endif //ONE_THROUGH_THREE_H
-
-// vim: tw=90 sts=3 sw=3 et

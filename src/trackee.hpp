@@ -42,5 +42,3 @@ inline std::weak_ptr<const Track> Trackee::getTrack() const
 }
 
 #endif //TRACKEE_H
-
-// vim: tw=90 sts=3 sw=3 et

@@ -41,5 +41,3 @@ void Frame::setBitmap(std::shared_ptr<const Bitmap> bitmap) const
 {
    this->bitmap = bitmap;
 }
-
-// vim: tw=90 sts=3 sw=3 et

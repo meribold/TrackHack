@@ -23,5 +23,3 @@ should look something like this:
 
 #### Windows Screenshot
 ![Screenshot](/../media/track-hack-screenshot-windows-7.png?raw=true)
-
-<!--- vim: set tw=90 sts=4 sw=4 et spell: -->

@@ -90,5 +90,3 @@ class ColorPool
 };
 
 #endif //COLOR_POOL_H
-
-// vim: tw=90 sts=3 sw=3 et

@@ -18,5 +18,3 @@ inline bool operator!=(const Point& rHS, const Point& lHS) {
 typedef std::vector<Point> Track;
 
 #endif //TRACK_H
-
-// vim: tw=90 sts=3 sw=3 et

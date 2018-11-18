@@ -34,5 +34,3 @@
     commit to the About Dialog.
 
 [1]: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65974
-
-<!--- vim: set tw=90 sts=4 sw=4 et spell: -->

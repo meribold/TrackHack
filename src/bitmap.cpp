@@ -15,5 +15,3 @@ unsigned char* Bitmap::operator[](std::size_t row) const
 {
    return pixels + row * width;
 }
-
-// vim: tw=90 sts=3 sw=3 et

@@ -259,5 +259,3 @@ void OneThroughThreeDialog::onImagePanelPaint(wxPaintEvent&)
       delete gC;
    }
 }
-
-// vim: tw=90 sts=3 sw=3 et

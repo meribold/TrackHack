@@ -166,5 +166,3 @@ void createBitmaps(std::string name)
 }
 
 #endif //CREATE_BITMAPS_H
-
-// vim: tw=90 sts=3 sw=3 et

@@ -197,5 +197,3 @@ inline int Tracker::niceness(const Point& point, unsigned char intensity,
 }
 
 #endif //TRACKER_H
-
-// vim: tw=90 sts=3 sw=3 et
