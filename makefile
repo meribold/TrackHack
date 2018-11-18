@@ -22,7 +22,7 @@ LDLIBS   :=
 # Create a release build by default so users can simply run `make`.  See [6] and [7].
 DEBUG ?= 0
 ifeq ($(DEBUG), 0)
-   CXXFLAGS := -O3 -flto -fuse-linker-plugin $(CXXFLAGS)
+   CXXFLAGS := -DNDEBUG -O3 -flto -fuse-linker-plugin $(CXXFLAGS)
    OBJDIR := build/release
 else
    CXXFLAGS := -DDEBUG -g $(CXXFLAGS)
